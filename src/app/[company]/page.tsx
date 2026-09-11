@@ -66,7 +66,7 @@ export default async function CompanyPage({
   const stagger = createStagger();
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-[430px] flex-col items-center overflow-hidden px-6 py-8">
+    <main className="mx-auto flex h-dvh w-full max-w-107.5 flex-col items-center overflow-hidden px-6 py-4 bg-white">
       {/* Logo / avatar */}
       <div
         className="animate-fade-up relative flex h-30 w-30 shrink-0 items-center justify-center overflow-hidden rounded-full"
@@ -104,7 +104,7 @@ export default async function CompanyPage({
 
       {/* Scrollable content: only this area scrolls if a company has enough
           links/team members to overflow — the page itself never does. */}
-      <div className="mt-2 flex min-h-0 w-full flex-1 flex-col items-center gap-8 overflow-y-auto pb-2">
+      <div className="mt-2 flex min-h-0 w-full flex-1 flex-col items-center gap-6 overflow-y-auto pb-2">
         {/* Link-in-bio CTA buttons */}
         {company.links && company.links.length > 0 && (
           <div className="flex w-full flex-col gap-3">
@@ -130,9 +130,6 @@ export default async function CompanyPage({
         {/* Location */}
         {company.address && (
           <section className="animate-fade-up w-full" style={stagger()}>
-            <h2 className="text-center text-xs font-semibold uppercase tracking-wide text-neutral-400">
-              Ubicación
-            </h2>
             <p className="mt-2 text-center text-sm text-neutral-600">
               {company.address}
             </p>

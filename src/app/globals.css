@@ -32,6 +32,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+#nl-badge-frame {
+  display: none;
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;
