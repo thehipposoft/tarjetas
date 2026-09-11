@@ -5,7 +5,7 @@
  * codes there don't point at production.
  */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://tarjeta.thehipposoft.com";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://tarjetas.thehipposoft.com";
 
 export function absoluteUrl(path: string): string {
   return new URL(path, SITE_URL).toString();
