@@ -71,7 +71,15 @@ Types live in [src/types/card.ts](src/types/card.ts): `Company`, `Person`,
 |---|---|
 | `/{company}` | Company profile / link-in-bio landing (e.g. `/rada`) — [src/app/[company]/page.tsx](src/app/[company]/page.tsx) |
 | `/{company}/{person}` | Individual digital profile (e.g. `/rada/tomas-borigen`) — [src/app/[company]/[person]/page.tsx](src/app/[company]/[person]/page.tsx) |
+| `/{company}/qr` | Standalone QR code for a company's landing page, for print (flyers/posters), not the NFC flow — [src/app/[company]/qr/page.tsx](src/app/[company]/qr/page.tsx) |
 | `/c/{cardId}` | Physical card routing layer (NFC/QR target); resolves a card to its current profile so the chip never needs reprogramming — [src/app/c/[cardId]/route.ts](src/app/c/[cardId]/route.ts) |
+
+`/{company}/qr` generates its QR server-side with the `qrcode` package, pointed
+at `absoluteUrl(\`/${company.slug}\`)` from [src/lib/site.ts](src/lib/site.ts)
+(`SITE_URL`, overridable via `NEXT_PUBLIC_SITE_URL` for non-production
+deployments). Keep the code itself black-on-white regardless of branding —
+colorizing QR modules risks scan reliability — and limit brand color to a
+small accent.
 
 `/c/{cardId}` is a route handler, not a page: it 302-redirects to
 `/{company}/{person}`, or to `/` if the card ID isn't found. A `TODO(phase 2)`
@@ -117,3 +125,13 @@ yarn lint
 ```
 
 No test runner is configured yet.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

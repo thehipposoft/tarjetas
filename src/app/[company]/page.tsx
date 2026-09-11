@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCompany, getCompanyPeople } from "@/lib/data";
-import type { Branding, CtaLink } from "@/types/card";
+import { brandBackground } from "@/lib/branding";
+import type { CtaLink } from "@/types/card";
 import {
   GlobeIcon,
   InstagramIcon,
@@ -29,14 +30,6 @@ function getInitials(name: string) {
     .slice(0, 2)
     .map((word) => word[0]?.toUpperCase())
     .join("");
-}
-
-function brandBackground(branding: Branding): CSSProperties {
-  return branding.secondaryColor
-    ? {
-        backgroundImage: `linear-gradient(to right, ${branding.primaryColor}, ${branding.secondaryColor})`,
-      }
-    : { backgroundColor: branding.primaryColor };
 }
 
 /**
