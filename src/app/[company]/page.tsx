@@ -1,4 +1,5 @@
 import type { ComponentType, CSSProperties, SVGProps } from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -45,11 +46,41 @@ function createStagger(stepMs = 70) {
   });
 }
 
-export default async function CompanyPage({
+type CompanyPageParams = { params: Promise<{ company: string }> };
+
+export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ company: string }>;
-}) {
+}: CompanyPageParams): Promise<Metadata> {
+  const { company: companySlug } = await params;
+  const company = getCompany(companySlug);
+  if (!company) return { title: "Perfil no encontrado" };
+
+  const displayName = company.name || company.slug;
+  const description =
+    company.description || `Perfil digital de ${displayName}.`;
+  const path = `/${company.slug}`;
+
+  return {
+    title: displayName,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title: displayName,
+      description,
+      url: path,
+      siteName: "Hippo Tarjetas",
+      images: company.logoUrl ? [{ url: company.logoUrl }] : undefined,
+    },
+    twitter: {
+      card: "summary",
+      title: displayName,
+      description,
+      images: company.logoUrl ? [company.logoUrl] : undefined,
+    },
+  };
+}
+
+export default async function CompanyPage({ params }: CompanyPageParams) {
   const { company: companySlug } = await params;
   const company = getCompany(companySlug);
   if (!company) notFound();

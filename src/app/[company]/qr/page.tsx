@@ -1,9 +1,33 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { getCompany } from "@/lib/data";
 import { brandBackground } from "@/lib/branding";
 import { absoluteUrl } from "@/lib/site";
 import Image from "next/image";
+
+type CompanyQrPageParams = { params: Promise<{ company: string }> };
+
+/**
+ * Utility page meant to be scanned or printed, not browsed or shared as a
+ * link — excluded from indexing so it never outranks the actual landing
+ * page in search results.
+ */
+export async function generateMetadata({
+  params,
+}: CompanyQrPageParams): Promise<Metadata> {
+  const { company: companySlug } = await params;
+  const company = getCompany(companySlug);
+  if (!company) return { title: "Código QR no encontrado" };
+
+  const title = company.name ? `Código QR — ${company.name}` : "Código QR";
+
+  return {
+    title,
+    description: `Escaneá para ver el perfil de ${company.name || company.slug}.`,
+    robots: { index: false, follow: false },
+  };
+}
 
 /**
  * Standalone, print-friendly page: just a QR code for a company's landing
@@ -12,11 +36,7 @@ import Image from "next/image";
  * Kept black-on-white regardless of branding — colorizing the code itself
  * risks scan reliability, so brand color is limited to a small accent.
  */
-export default async function CompanyQrPage({
-  params,
-}: {
-  params: Promise<{ company: string }>;
-}) {
+export default async function CompanyQrPage({ params }: CompanyQrPageParams) {
   const { company: companySlug } = await params;
   const company = getCompany(companySlug);
   if (!company) notFound();

@@ -99,6 +99,17 @@ If a future task needs static Tailwind classes for brand colour (e.g. a
 "badge" component), ask which companies need it and consider generating
 per-company CSS variables at request time rather than hardcoding a palette.
 
+### Analytics
+
+Site-wide Google Analytics (gtag.js) is loaded from
+[src/components/google-analytics.tsx](src/components/google-analytics.tsx),
+rendered once in the root layout ([layout.tsx](src/app/layout.tsx)) — not
+per-page. Uses `next/script` with `strategy="afterInteractive"` rather than
+raw `<script>` tags (Next's recommended way to load third-party scripts).
+The measurement ID defaults to this project's (`G-8C8ZD033W9`) but is
+overridable via `NEXT_PUBLIC_GA_MEASUREMENT_ID` so a project copied from this
+template doesn't silently inherit it.
+
 ### Conventions
 
 - Path alias `@/*` → `src/*` (see [tsconfig.json](tsconfig.json)).
@@ -113,6 +124,14 @@ per-company CSS variables at request time rather than hardcoding a palette.
   `max-w-[430px]` and centered — match this for new profile-style pages.
 - Fonts: `Geist` / `Geist Mono` via `next/font/google`, exposed as CSS
   variables and wired into Tailwind's `@theme inline` block.
+- Every dynamic route (`[company]`, `[company]/[person]`, `[company]/qr`)
+  exports `generateMetadata` — title (via the root layout's `%s | Hippo
+  Tarjetas` template), description, `alternates.canonical`, and Open
+  Graph/Twitter tags using the entity's own logo/photo as the preview image.
+  Falls back to `company.slug` when `company.name` is empty (as it currently
+  is for one company) rather than producing a blank/broken title. The `/qr`
+  variant sets `robots: { index: false, follow: false }` since it's a
+  scan/print utility, not a page meant to be found or shared as a link.
 
 ### Commands
 
