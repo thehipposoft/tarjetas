@@ -12,7 +12,8 @@ const companies: Company[] = [
   {
     slug: "rada",
     name: "RADA Rent a Car",
-    description: "Alquiler de autos en Argentina.",
+    description: "",
+    logoUrl: "/logos/rada.svg",
     branding: {
       primaryColor: "#e41d2e",
     },

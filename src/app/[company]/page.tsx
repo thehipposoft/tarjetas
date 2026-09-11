@@ -46,14 +46,14 @@ export default async function CompanyPage({
     <main className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col items-center px-6 py-14">
       {/* Logo / avatar */}
       <div
-        className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full"
-        style={{ backgroundColor: brand }}
+        className="relative flex h-30 w-30 items-center justify-center overflow-hidden rounded-full"
       >
         {company.logoUrl ? (
           <Image
             src={company.logoUrl}
             alt={company.name}
             fill
+            unoptimized
             className="object-cover"
           />
         ) : (
