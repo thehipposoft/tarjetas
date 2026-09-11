@@ -47,6 +47,24 @@ export function GlobeIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function MapPinIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M19 10c0 5.5-7 12-7 12s-7-6.5-7-12a7 7 0 0 1 14 0Z" />
+      <circle cx="12" cy="10" r="2.6" />
+    </svg>
+  );
+}
+
 export function UserPlusIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg

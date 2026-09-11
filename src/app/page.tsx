@@ -5,7 +5,7 @@ export default function Home() {
   const companies = getAllCompanies();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
+    <main className="flex h-dvh flex-col items-center justify-center gap-4 overflow-hidden p-8 text-center">
       <h1 className="text-2xl font-semibold">Hippo Tarjetas</h1>
       <p className="text-neutral-500">
         Digital business card platform — The Hipposoft

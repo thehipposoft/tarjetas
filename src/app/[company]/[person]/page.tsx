@@ -12,7 +12,7 @@ export default async function PersonPage({
   if (!company || !person) notFound();
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-4 p-8 text-center">
+    <main className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col items-center justify-center gap-4 overflow-hidden p-8 text-center">
       <div
         className="h-24 w-24 rounded-full"
         style={{ backgroundColor: company.branding.primaryColor }}
@@ -25,22 +25,34 @@ export default async function PersonPage({
 
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         {person.phone && (
-          <a href={`tel:${person.phone}`} className="rounded-full border px-4 py-2 text-sm">
+          <a
+            href={`tel:${person.phone}`}
+            className="rounded-full border px-4 py-2 text-sm"
+          >
             Call
           </a>
         )}
         {person.email && (
-          <a href={`mailto:${person.email}`} className="rounded-full border px-4 py-2 text-sm">
+          <a
+            href={`mailto:${person.email}`}
+            className="rounded-full border px-4 py-2 text-sm"
+          >
             Email
           </a>
         )}
         {person.social?.whatsapp && (
-          <a href={person.social.whatsapp} className="rounded-full border px-4 py-2 text-sm">
+          <a
+            href={person.social.whatsapp}
+            className="rounded-full border px-4 py-2 text-sm"
+          >
             WhatsApp
           </a>
         )}
         {person.social?.linkedin && (
-          <a href={person.social.linkedin} className="rounded-full border px-4 py-2 text-sm">
+          <a
+            href={person.social.linkedin}
+            className="rounded-full border px-4 py-2 text-sm"
+          >
             LinkedIn
           </a>
         )}
