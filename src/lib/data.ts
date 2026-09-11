@@ -14,13 +14,35 @@ const companies: Company[] = [
     name: "RADA Rent a Car",
     description: "Alquiler de autos en Argentina.",
     branding: {
-      primaryColor: "#E41D30",
+      primaryColor: "#e41d2e",
     },
     social: {
-      website: "https://www.rada.com.ar",
-      whatsapp: "https://wa.me/5490000000000",
-      instagram: "https://instagram.com/rada",
+      website: "https://www.radarentacar.com.ar/",
+      whatsapp: "https://wa.me/5493872245587",
+      instagram: "https://www.instagram.com/radarentacarok/",
     },
+    links: [
+      {
+        label: "Sumate a RADA Partners",
+        url: "https://forms.gle/k1Xf1H39EZy44H557",
+        icon: "form",
+      },
+      {
+        label: "¡Alquilá por WhatsApp!",
+        url: "https://wa.me/5493872245587",
+        icon: "whatsapp",
+      },
+      {
+        label: "Seguinos",
+        url: "https://www.instagram.com/radarentacarok/",
+        icon: "instagram",
+      },
+      {
+        label: "Conocé RADA",
+        url: "https://www.radarentacar.com.ar/",
+        icon: "web",
+      },
+    ],
   },
 ];
 

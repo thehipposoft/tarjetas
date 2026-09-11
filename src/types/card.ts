@@ -21,6 +21,12 @@ export interface Branding {
   logoUrl?: string;
 }
 
+export interface CtaLink {
+  label: string;
+  url: string;
+  icon?: "whatsapp" | "instagram" | "web" | "form";
+}
+
 export interface Company {
   slug: string;
   name: string;
@@ -33,6 +39,8 @@ export interface Company {
   googleMapsUrl?: string;
   branding: Branding;
   social?: SocialLinks;
+  /** Curated call-to-action buttons for the company's link-in-bio style landing (e.g. the NFC card destination). */
+  links?: CtaLink[];
 }
 
 export interface Person {
