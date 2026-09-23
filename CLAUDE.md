@@ -137,32 +137,43 @@ colored via inline `style={{ borderColor: company.branding.primaryColor }}`
 page intentionally does *not* get this treatment — it's meant to be
 printed/scanned, not browsed as a card.
 
-The person page follows a business-card look (modeled on a reference
-design): the company logo bleeds off the top-left corner (positioned with a
-negative offset; the card's own `overflow-hidden` clips it into a corner
-"sticker" — no separate circular mask needed), the person's photo gets a
-`border-4` ring in `primaryColor`, and contact/company links render as
-neutral list rows with a trailing chevron (`CtaButton`'s `variant="row"`)
-rather than the company page's bold solid buttons — several loud buttons
-stacked on one contact card reads as too much. Two optional `Company`
-fields drive the rest, both `\n`-joined multi-line strings, and both no-ops
-when unset: `tagline` (top-right, gray uppercase + a short accent-color
+Both pages follow a business-card look (modeled on a reference design). The
+person page: the company logo bleeds off the top-left corner (positioned
+with a negative offset; the card's own `overflow-hidden` clips it into a
+corner "sticker" — no separate circular mask needed), the person's photo
+gets a `border-4` ring in `primaryColor`. Both pages render their
+CTAs/contact links as neutral list rows with a trailing chevron
+(`CtaButton`'s `variant="row"`, bordered in `primaryColor`) rather than bold
+solid buttons — even on the company page's own link list, several loud
+brand-colored buttons stacked together reads as too much once the row style
+existed for comparison. Two optional `Company` fields drive the person
+page's taglines, both `\n`-joined multi-line strings and both no-ops when
+unset: `tagline` (top-right, gray uppercase + a short accent-color
 underline) and `footerTagline` (bottom-right, same styling, sitting beside —
-not on top of — an accent-colored shape bled off the bottom-left corner).
-Keep footer tagline text off the shape itself: the shape only covers the
-corner, so text placed over it instead of beside it would need a different
-color per-company to stay legible, which defeats the point of it being a
-generic, data-driven field.
+not on top of — the bottom-left accent shape described below). Keep footer
+tagline text off the shape itself: the shape only covers the corner, so text
+placed over it instead of beside it would need a different color
+per-company to stay legible, which defeats the point of it being a generic,
+data-driven field. The company page has no `footerTagline` slot — it renders
+the same accent shape purely as decoration, with no text.
 
 The bottom-left accent shape is an inline `<svg>` (a diagonal wedge + accent
 line, not a plain rotated rectangle), colored via `company.branding.primaryColor`
 on `fill`/`stroke` rather than a hardcoded color, so it stays data-driven per
-company. Two things to keep in mind if this shape is touched again:
+company, and shared (copy-pasted, not extracted — it's two short `<path>`s)
+between both pages. The company page's copy is sized smaller (`h-20 w-27`
+vs. the person page's `h-32 w-48`) since that page has no reserved footer
+band the way the person page does — its content area is a variable-height
+scroll region that can run close to the card's bottom edge (e.g. RADA's map
++ "Ver en Google Maps" link), so a large bleed risks overlapping real
+content at small viewports. `pointer-events-none` on the shape means even
+where it does overlap something, it never blocks a tap. Two things to
+keep in mind if this shape is touched again:
 - It must be a **direct child of `main`** (not nested inside the small
-  `footerTagline` wrapper div), and that wrapper must not itself have
-  `overflow-hidden` — the bleed should be clipped by `main`'s own
-  `overflow-hidden` + rounded corner (same mechanism as the top-left logo
-  bleed), not by an inner box.
+  `footerTagline` wrapper div on the person page), and that wrapper must not
+  itself have `overflow-hidden` — the bleed should be clipped by `main`'s
+  own `overflow-hidden` + rounded corner (same mechanism as the top-left
+  logo bleed), not by an inner box.
 - **`viewBox` must be cropped tightly to the shape's own bounding box.** A
   `viewBox` with a lot of empty space around the actual path (e.g. a small
   shape inside a much larger `0 0 600 400` box) reliably fails to paint at

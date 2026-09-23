@@ -132,7 +132,7 @@ export default async function PersonPage({ params }: PersonPageParams) {
               </div>
             )}
           </div>
-          <h1 className="shrink-0 text-2xl font-bold">
+          <h1 className="shrink-0 text-2xl font-bold text-black">
             {person.firstName} {person.lastName}
           </h1>
           {person.jobTitle && (

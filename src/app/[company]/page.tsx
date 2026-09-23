@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCompany, getCompanyPeople } from "@/lib/data";
-import { brandBackground, logoBackgroundStyle } from "@/lib/branding";
+import { logoBackgroundStyle } from "@/lib/branding";
 import { mapEmbedSrc } from "@/lib/maps";
 import { CtaButton } from "@/components/cta-button";
 import { MapPinIcon } from "@/components/icons";
@@ -71,14 +71,13 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
   if (!company) notFound();
 
   const people = getCompanyPeople(companySlug);
-  const brandStyle = brandBackground(company.branding);
   const stagger = createStagger();
   const mapSrc = mapEmbedSrc(company);
 
   return (
     <div className="flex h-dvh w-full items-center justify-center overflow-hidden bg-neutral-100 p-4">
       <main
-        className="mx-auto flex h-full max-h-184 w-full max-w-107.5 flex-col items-center overflow-hidden rounded-4xl border-2 bg-white px-4 py-4 shadow-xl"
+        className="relative mx-auto flex h-full max-h-184 w-full max-w-107.5 flex-col items-center overflow-hidden rounded-4xl border-2 bg-white px-4 py-4 shadow-xl"
         style={{ borderColor: company.branding.primaryColor }}
       >
         {/* Logo / avatar */}
@@ -124,8 +123,9 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
                   href={link.url}
                   label={link.label}
                   icon={link.icon}
+                  variant="row"
                   className="animate-fade-up"
-                  style={stagger(brandStyle)}
+                  style={stagger()}
                   primaryColor={company.branding.primaryColor}
                 />
               ))}
@@ -153,6 +153,7 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2 text-center text-sm text-neutral-700"
+                  style={{ borderColor: company.branding.primaryColor }}
                 >
                   <MapPinIcon className="h-4 w-4 shrink-0" />
                   <span>Ver en Google Maps</span>
@@ -185,6 +186,28 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
             </section>
           )}
         </div>
+
+        {/* Decorative accent shape bled off the bottom-left corner — same
+            shape/positioning as the person page's card, clipped by this
+            <main>'s own overflow-hidden + rounded corner. Purely
+            decorative here (no footer tagline text on this page). */}
+        <svg
+          className="pointer-events-none absolute -bottom-5 -left-7 h-20 w-27"
+          viewBox="0 150 320 240"
+          aria-hidden="true"
+        >
+          <path
+            d="M 0 165 L 285 375 L 45 375 C 20 375 0 355 0 330 Z"
+            fill={company.branding.primaryColor}
+          />
+          <path
+            d="M 110 225 L 305 375"
+            fill="none"
+            stroke={company.branding.primaryColor}
+            strokeWidth="12"
+            strokeLinecap="round"
+          />
+        </svg>
       </main>
     </div>
   );
