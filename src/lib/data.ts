@@ -14,6 +14,8 @@ const companies: Company[] = [
     name: "RADA Rent a Car",
     description: "",
     logoUrl: "/logos/rada.svg",
+    tagline: "Rent a Car\nArgentina",
+    footerTagline: "Tu destino\nnos mueve",
     // No street-address text on hand yet — the embed still pins the exact
     // spot via the coordinates in this URL (see src/lib/maps.ts).
     googleMapsUrl:

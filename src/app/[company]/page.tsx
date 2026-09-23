@@ -126,6 +126,7 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
                   icon={link.icon}
                   className="animate-fade-up"
                   style={stagger(brandStyle)}
+                  primaryColor={company.branding.primaryColor}
                 />
               ))}
             </div>

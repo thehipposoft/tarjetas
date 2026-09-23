@@ -49,6 +49,10 @@ export interface Company {
   social?: SocialLinks;
   /** Curated call-to-action buttons for the company's link-in-bio style landing (e.g. the NFC card destination). */
   links?: CtaLink[];
+  /** Small wordmark text shown top-right on a person's card (e.g. "Rent a Car\nArgentina"). Use \n for a line break. Optional — omit to leave that corner empty. */
+  tagline?: string;
+  /** Short tagline shown over the accent shape at the bottom of a person's card (e.g. "Tu destino\nnos mueve"). Use \n for a line break. Optional. */
+  footerTagline?: string;
 }
 
 export interface Person {

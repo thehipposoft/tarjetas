@@ -116,6 +116,15 @@ page's own `links` list, and reused on the person page for "Seguinos"/
 re-typed). A person's WhatsApp button, though, always uses that person's own
 number (`person.social.whatsapp`), not the company's.
 
+`CtaButton` also takes an optional `primaryColor` prop, rendered as the
+button's border on both variants — pass `company.branding.primaryColor` at
+every call site so every CTA stays visually tied to the card's own border
+color. On the "row" variant this is the main visible effect (a colored
+outline around an otherwise neutral pill); on the "solid" variant the border
+matches the button's own brand-colored/gradient fill, so it reads as a subtle
+edge rather than a separate accent — omit the prop only for a context with no
+brand color to pass, which falls back to a neutral gray border.
+
 If a future task needs static Tailwind classes for brand colour (e.g. a
 "badge" component), ask which companies need it and consider generating
 per-company CSS variables at request time rather than hardcoding a palette.
@@ -124,11 +133,49 @@ Both the company and person pages are framed as a literal card: a
 `bg-neutral-100` backdrop (local to each page — not a site-wide change)
 behind a white `<main>` with `shadow-xl`, rounded corners, and a `border-2`
 colored via inline `style={{ borderColor: company.branding.primaryColor }}`
-(primary color only — a gradient can't cleanly become a border). The
-company logo on the person page sits top-left as an absolutely-positioned
-badge with no name text next to it — the border/colors already say which
-company it is. The `/qr` page intentionally does *not* get this treatment —
-it's meant to be printed/scanned, not browsed as a card.
+(primary color only — a gradient can't cleanly become a border). The `/qr`
+page intentionally does *not* get this treatment — it's meant to be
+printed/scanned, not browsed as a card.
+
+The person page follows a business-card look (modeled on a reference
+design): the company logo bleeds off the top-left corner (positioned with a
+negative offset; the card's own `overflow-hidden` clips it into a corner
+"sticker" — no separate circular mask needed), the person's photo gets a
+`border-4` ring in `primaryColor`, and contact/company links render as
+neutral list rows with a trailing chevron (`CtaButton`'s `variant="row"`)
+rather than the company page's bold solid buttons — several loud buttons
+stacked on one contact card reads as too much. Two optional `Company`
+fields drive the rest, both `\n`-joined multi-line strings, and both no-ops
+when unset: `tagline` (top-right, gray uppercase + a short accent-color
+underline) and `footerTagline` (bottom-right, same styling, sitting beside —
+not on top of — an accent-colored shape bled off the bottom-left corner).
+Keep footer tagline text off the shape itself: the shape only covers the
+corner, so text placed over it instead of beside it would need a different
+color per-company to stay legible, which defeats the point of it being a
+generic, data-driven field.
+
+The bottom-left accent shape is an inline `<svg>` (a diagonal wedge + accent
+line, not a plain rotated rectangle), colored via `company.branding.primaryColor`
+on `fill`/`stroke` rather than a hardcoded color, so it stays data-driven per
+company. Two things to keep in mind if this shape is touched again:
+- It must be a **direct child of `main`** (not nested inside the small
+  `footerTagline` wrapper div), and that wrapper must not itself have
+  `overflow-hidden` — the bleed should be clipped by `main`'s own
+  `overflow-hidden` + rounded corner (same mechanism as the top-left logo
+  bleed), not by an inner box.
+- **`viewBox` must be cropped tightly to the shape's own bounding box.** A
+  `viewBox` with a lot of empty space around the actual path (e.g. a small
+  shape inside a much larger `0 0 600 400` box) reliably fails to paint at
+  all in this browser when the `<svg>` sits inside a heavily-downscaled,
+  clipped ancestor — confirmed by isolating the exact same `<path>` in a
+  standalone HTML file (renders fine there) vs. injecting it into this page
+  (invisible) vs. re-cropping the `viewBox` to the shape's actual extent
+  (renders fine again). This is a second empirically-confirmed SVG/clipping
+  rendering quirk in this environment, alongside the earlier negative-z-index-
+  inside-overflow-hidden one — if a future shape here goes invisible for no
+  apparent reason (correct computed styles, correct attributes, correct DOM
+  position), suspect the `viewBox` size relative to the drawn content before
+  anything else.
 
 `Branding.logoBackground` (optional boolean, default `true`) controls whether
 the brand color/gradient renders behind the logo circle — see
