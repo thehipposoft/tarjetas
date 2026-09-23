@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCompany, getCompanyPeople } from "@/lib/data";
-import { brandBackground } from "@/lib/branding";
+import { brandBackground, logoBackgroundStyle } from "@/lib/branding";
+import { mapEmbedSrc } from "@/lib/maps";
 import type { CtaLink } from "@/types/card";
 import {
   GlobeIcon,
@@ -88,13 +89,16 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
   const people = getCompanyPeople(companySlug);
   const brandStyle = brandBackground(company.branding);
   const stagger = createStagger();
+  const mapSrc = mapEmbedSrc(company);
 
   return (
     <main className="mx-auto flex h-dvh w-full max-w-107.5 flex-col items-center overflow-hidden px-6 py-4 bg-white">
       {/* Logo / avatar */}
       <div
         className="animate-fade-up relative flex h-30 w-30 shrink-0 items-center justify-center overflow-hidden rounded-full"
-        style={stagger(brandStyle)}
+        style={stagger(
+          logoBackgroundStyle(company.branding, Boolean(company.logoUrl))
+        )}
       >
         {company.logoUrl ? (
           <Image
@@ -111,12 +115,6 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
         )}
       </div>
 
-      <h1
-        className="animate-fade-up mt-4 shrink-0 text-center text-2xl font-bold text-neutral-900"
-        style={stagger()}
-      >
-        {company.name}
-      </h1>
       {company.description && (
         <p
           className="animate-fade-up mt-1 shrink-0 text-center text-sm text-neutral-500"
@@ -152,16 +150,16 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
         )}
 
         {/* Location */}
-        {company.address && (
+        {mapSrc && (
           <section className="animate-fade-up w-full" style={stagger()}>
-            <p className="mt-2 text-center text-sm text-neutral-600">
-              {company.address}
-            </p>
+            {company.address && (
+              <p className="mt-2 text-center text-sm text-neutral-600">
+                {company.address}
+              </p>
+            )}
             <iframe
               title={`Mapa de ${company.name}`}
-              src={`https://www.google.com/maps?q=${encodeURIComponent(
-                company.address
-              )}&output=embed`}
+              src={mapSrc}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="mt-3 h-46 w-full rounded-2xl border-0"
@@ -182,7 +180,7 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
 
         {/* Team */}
         {people.length > 0 && (
-          <section className="animate-fade-up w-full" style={stagger()}>
+          <section className="hidden animate-fade-up w-full" style={stagger()}>
             <h2 className="text-center text-xs font-semibold uppercase tracking-wide text-neutral-400">
               Nuestro equipo
             </h2>

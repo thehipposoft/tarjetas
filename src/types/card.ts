@@ -19,6 +19,14 @@ export interface Branding {
   backgroundColor?: string;
   textColor?: string;
   logoUrl?: string;
+  /**
+   * Whether to paint primaryColor/secondaryColor behind the logo circle.
+   * Turn off when the logo image already has its own opaque background
+   * (e.g. a badge-style SVG) — leave on (or omit; defaults to true) when
+   * the logo has a transparent background and needs a backdrop for
+   * contrast (e.g. a wordmark PNG with white text).
+   */
+  logoBackground?: boolean;
 }
 
 export interface CtaLink {

@@ -81,6 +81,15 @@ deployments). Keep the code itself black-on-white regardless of branding —
 colorizing QR modules risks scan reliability — and limit brand color to a
 small accent.
 
+The `/{company}` page's "Ubicación" section renders whenever
+`mapEmbedSrc(company)` ([src/lib/maps.ts](src/lib/maps.ts)) returns something —
+not gated on `company.address` alone. That helper parses the exact pin
+coordinates out of `googleMapsUrl`'s `!3d{lat}!4d{lng}` segment when present
+(more precise than a text search, and works even without a real street
+address on hand yet — see RADA), falling back to a text query on `address`
+when there's no Maps URL. The address paragraph itself only renders when
+`company.address` is actually set — never fabricate one.
+
 `/c/{cardId}` is a route handler, not a page: it 302-redirects to
 `/{company}/{person}`, or to `/` if the card ID isn't found. A `TODO(phase 2)`
 marks where scan analytics (NFC vs QR, timestamp, device) should be recorded
@@ -98,6 +107,15 @@ scale — no custom base theme has been requested.
 If a future task needs static Tailwind classes for brand colour (e.g. a
 "badge" component), ask which companies need it and consider generating
 per-company CSS variables at request time rather than hardcoding a palette.
+
+`Branding.logoBackground` (optional boolean, default `true`) controls whether
+the brand color/gradient renders behind the logo circle — see
+[src/lib/branding.ts](src/lib/branding.ts)'s `logoBackgroundStyle()`. Set it
+to `false` when a company's logo file already has its own opaque background
+(RADA's SVG badge); leave it on/omitted when the logo has a transparent
+background and needs a backdrop for contrast (Dycar's wordmark PNG with white
+text). The flag never blanks the initials fallback when there's no
+`logoUrl` — that always needs its colored backdrop to stay legible.
 
 ### Analytics
 

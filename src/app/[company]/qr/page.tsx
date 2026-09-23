@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { getCompany } from "@/lib/data";
-import { brandBackground } from "@/lib/branding";
+import { logoBackgroundStyle } from "@/lib/branding";
 import { absoluteUrl } from "@/lib/site";
 import Image from "next/image";
 
@@ -63,7 +63,7 @@ export default async function CompanyQrPage({ params }: CompanyQrPageParams) {
               height={150}
               unoptimized
               className="object-cover rounded-full"
-              style={brandBackground(company.branding)}
+              style={logoBackgroundStyle(company.branding, true)}
             />
           )
         }

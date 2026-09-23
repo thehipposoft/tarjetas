@@ -14,8 +14,14 @@ const companies: Company[] = [
     name: "RADA Rent a Car",
     description: "",
     logoUrl: "/logos/rada.svg",
+    // No street-address text on hand yet — the embed still pins the exact
+    // spot via the coordinates in this URL (see src/lib/maps.ts).
+    googleMapsUrl:
+      "https://www.google.com/maps/place/RADA/@-24.7909873,-65.4123871,17z/data=!3m1!4b1!4m6!3m5!1s0x941bc3cac8453337:0x413a0c41627d35a2!8m2!3d-24.7909922!4d-65.4098122!16s%2Fg%2F11h2qtkpxv?entry=ttu&g_ep=EgoyMDI2MDkyMC4wIKXMDSoASAFQAw%3D%3D",
     branding: {
       primaryColor: "#e41d2e",
+      // RADA's own SVG has an opaque colored badge shape, so no backdrop is needed.
+      logoBackground: false,
     },
     social: {
       website: "https://www.radarentacar.com.ar/",
@@ -55,6 +61,8 @@ const companies: Company[] = [
     branding: {
       primaryColor: "#3458a2",
       secondaryColor: "#1d2a4d",
+      // Dycar's PNG has a transparent background with white text, needs the backdrop.
+      logoBackground: true,
     },
     social: {
       website: "https://www.kamacamiones.com.ar/",
