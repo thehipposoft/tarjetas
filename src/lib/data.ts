@@ -98,12 +98,12 @@ const people: Person[] = [
   {
     slug: "tomas-borigen",
     companySlug: "rada",
-    firstName: "Tomas",
+    firstName: "Tomás",
     lastName: "Borigen",
     jobTitle: "Sales Manager",
-    email: "tomas@rada.com.ar",
+    photoUrl: "/rada/foto-tomy-red.jpeg",
     social: {
-      linkedin: "https://linkedin.com/in/tomasborigen",
+      whatsapp: "https://wa.me/5493874730332",
     },
   },
 ];

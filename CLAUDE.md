@@ -98,15 +98,37 @@ once storage exists — do this *before* the redirect, not after.
 ### Branding / colours
 
 Colour is **per-company, data-driven** — not a fixed site palette. Each
-`Company.branding.primaryColor` (hex string) is applied inline via
-`style={{ backgroundColor: brand }}` in the company/person pages, since
-Tailwind can't generate utility classes for arbitrary runtime values. The app
-shell itself (home page, 404s, etc.) uses Tailwind's default neutral/gray
-scale — no custom base theme has been requested.
+`Company.branding.primaryColor`/`secondaryColor` is resolved via
+`brandBackground()` in [src/lib/branding.ts](src/lib/branding.ts) (solid
+color, or a gradient when `secondaryColor` is set) and applied as an inline
+`style`, since Tailwind can't generate utility classes for arbitrary runtime
+values. The person page uses the *same* `brandBackground(company.branding)` —
+a person's profile always matches their company's exact colors, gradient
+included, never a separate palette. The app shell itself (home page, 404s,
+etc.) uses Tailwind's default neutral/gray scale — no custom base theme has
+been requested.
+
+Link-in-bio style buttons (icon + label, brand-colored) go through the shared
+[`CtaButton`](src/components/cta-button.tsx) component — used for the company
+page's own `links` list, and reused on the person page for "Seguinos"/
+"Conocé {company}" so those stay in exact sync with the company's own
+`links` entries (same label, same url — looked up by `icon`, not
+re-typed). A person's WhatsApp button, though, always uses that person's own
+number (`person.social.whatsapp`), not the company's.
 
 If a future task needs static Tailwind classes for brand colour (e.g. a
 "badge" component), ask which companies need it and consider generating
 per-company CSS variables at request time rather than hardcoding a palette.
+
+Both the company and person pages are framed as a literal card: a
+`bg-neutral-100` backdrop (local to each page — not a site-wide change)
+behind a white `<main>` with `shadow-xl`, rounded corners, and a `border-2`
+colored via inline `style={{ borderColor: company.branding.primaryColor }}`
+(primary color only — a gradient can't cleanly become a border). The
+company logo on the person page sits top-left as an absolutely-positioned
+badge with no name text next to it — the border/colors already say which
+company it is. The `/qr` page intentionally does *not* get this treatment —
+it's meant to be printed/scanned, not browsed as a card.
 
 `Branding.logoBackground` (optional boolean, default `true`) controls whether
 the brand color/gradient renders behind the logo circle — see
