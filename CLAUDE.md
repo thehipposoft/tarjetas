@@ -188,6 +188,27 @@ keep in mind if this shape is touched again:
   position), suspect the `viewBox` size relative to the drawn content before
   anything else.
 
+Both profile pages (`/{company}` and `/{company}/{person}`) are wrapped in
+[`FlipCard`](src/components/flip-card.tsx), a client component driven by
+**GSAP** (`gsap`, plain `gsap.to`/`gsap.set`, no `@gsap/react`). A horizontal
+swipe (touch or mouse drag) flips the card to a back face with a QR code of
+that page's own canonical URL (`absoluteUrl(...)`, generated server-side by
+`createQrSvg` in [src/lib/qr.ts](src/lib/qr.ts), shared with the `/qr` page)
+plus a "Volver" button. Notes for future changes:
+- `FlipCard` owns the outer size (`max-w-107.5`, `max-h-184`, `h-full`); the
+  page passes its `<main>` as `children` with `h-full w-full`, not the old
+  sizing classes.
+- Vertical gestures are left to inner scroll regions (`touch-pan-y` on the
+  root and all descendants); the card only starts dragging once horizontal
+  movement wins. A drag that ends on a link suppresses the click.
+- The hidden face is `inert`, so links/buttons on it can't be focused or
+  tapped. Reduced-motion users get an instant flip.
+- The Google Maps `<iframe>` swallows pointer events (cross-origin), so a
+  swipe that starts on the map won't flip the card.
+- The QR encodes `SITE_URL`, so on localhost it points at the production
+  domain unless `NEXT_PUBLIC_SITE_URL` is set.
+- There's no visible affordance for the swipe (no button on the front face).
+
 `Branding.logoBackground` (optional boolean, default `true`) controls whether
 the brand color/gradient renders behind the logo circle — see
 [src/lib/branding.ts](src/lib/branding.ts)'s `logoBackgroundStyle()`. Set it

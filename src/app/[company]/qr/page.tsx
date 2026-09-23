@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import QRCode from "qrcode";
 import { getCompany } from "@/lib/data";
 import { logoBackgroundStyle } from "@/lib/branding";
+import { createQrSvg } from "@/lib/qr";
 import { absoluteUrl } from "@/lib/site";
 import Image from "next/image";
 
@@ -43,13 +43,7 @@ export default async function CompanyQrPage({ params }: CompanyQrPageParams) {
 
   const targetUrl = absoluteUrl(`/${company.slug}`);
 
-  // Generated server-side from a URL we build ourselves (company.slug is
-  // trusted, admin-controlled data, not public input) — safe to inject.
-  const qrSvg = await QRCode.toString(targetUrl, {
-    type: "svg",
-    margin: 1,
-    color: { dark: "#171717", light: "#ffffff" },
-  });
+  const qrSvg = await createQrSvg(targetUrl);
 
   return (
     <main className="mx-auto flex h-dvh w-full max-w-107.5 flex-col items-center justify-center gap-6 overflow-hidden bg-white px-6 py-10 text-center">

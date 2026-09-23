@@ -6,7 +6,10 @@ import { notFound } from "next/navigation";
 import { getCompany, getCompanyPeople } from "@/lib/data";
 import { logoBackgroundStyle } from "@/lib/branding";
 import { mapEmbedSrc } from "@/lib/maps";
+import { createQrSvg } from "@/lib/qr";
+import { absoluteUrl } from "@/lib/site";
 import { CtaButton } from "@/components/cta-button";
+import { FlipCard } from "@/components/flip-card";
 import { MapPinIcon } from "@/components/icons";
 
 function getInitials(name: string) {
@@ -73,142 +76,151 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
   const people = getCompanyPeople(companySlug);
   const stagger = createStagger();
   const mapSrc = mapEmbedSrc(company);
+  const shareUrl = absoluteUrl(`/${company.slug}`);
+  const qrSvg = await createQrSvg(shareUrl);
 
   return (
     <div className="flex h-dvh w-full items-center justify-center overflow-hidden bg-neutral-100 p-4">
-      <main
-        className="relative mx-auto flex h-full max-h-184 w-full max-w-107.5 flex-col items-center overflow-hidden rounded-4xl border-2 bg-white px-4 py-4 shadow-xl"
-        style={{ borderColor: company.branding.primaryColor }}
+      <FlipCard
+        qrSvg={qrSvg}
+        url={shareUrl}
+        title={company.name || company.slug}
+        primaryColor={company.branding.primaryColor}
       >
-        {/* Logo / avatar */}
-        <div
-          className="animate-fade-up relative flex h-30 w-30 shrink-0 items-center justify-center overflow-hidden rounded-full"
-          style={stagger(
-            logoBackgroundStyle(company.branding, Boolean(company.logoUrl))
-          )}
+        <main
+          className="relative flex h-full w-full flex-col items-center overflow-hidden rounded-4xl border-2 bg-white px-4 py-4 shadow-xl"
+          style={{ borderColor: company.branding.primaryColor }}
         >
-          {company.logoUrl ? (
-            <Image
-              src={company.logoUrl}
-              alt={company.name}
-              fill
-              unoptimized
-              className="object-cover"
-            />
-          ) : (
-            <span className="text-xl font-bold text-white">
-              {getInitials(company.name)}
-            </span>
-          )}
-        </div>
-
-        {company.description && (
-          <p
-            className="animate-fade-up mt-1 shrink-0 text-center text-sm text-neutral-500"
-            style={stagger()}
+          {/* Logo / avatar */}
+          <div
+            className="animate-fade-up relative flex h-30 w-30 shrink-0 items-center justify-center overflow-hidden rounded-full"
+            style={stagger(
+              logoBackgroundStyle(company.branding, Boolean(company.logoUrl))
+            )}
           >
-            {company.description}
-          </p>
-        )}
-
-        {/* Scrollable content: only this area scrolls if a company has enough
-            links/team members to overflow — the page itself never does. */}
-        <div className="mt-2 flex min-h-0 w-full flex-1 flex-col items-center gap-6 overflow-y-auto pb-2">
-          {/* Link-in-bio CTA buttons */}
-          {company.links && company.links.length > 0 && (
-            <div className="flex w-full flex-col gap-3">
-              {company.links.map((link) => (
-                <CtaButton
-                  key={link.url}
-                  href={link.url}
-                  label={link.label}
-                  icon={link.icon}
-                  variant="row"
-                  className="animate-fade-up"
-                  style={stagger()}
-                  primaryColor={company.branding.primaryColor}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Location */}
-          {mapSrc && (
-            <section className="animate-fade-up w-full" style={stagger()}>
-              {company.address && (
-                <p className="mt-2 text-center text-sm text-neutral-600">
-                  {company.address}
-                </p>
-              )}
-              <iframe
-                title={`Mapa de ${company.name}`}
-                src={mapSrc}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="mt-3 h-46 w-full rounded-2xl border-0"
+            {company.logoUrl ? (
+              <Image
+                src={company.logoUrl}
+                alt={company.name}
+                fill
+                unoptimized
+                className="object-cover"
               />
-              {company.googleMapsUrl && (
-                <a
-                  href={company.googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2 text-center text-sm text-neutral-700"
-                  style={{ borderColor: company.branding.primaryColor }}
-                >
-                  <MapPinIcon className="h-4 w-4 shrink-0" />
-                  <span>Ver en Google Maps</span>
-                </a>
-              )}
-            </section>
-          )}
+            ) : (
+              <span className="text-xl font-bold text-white">
+                {getInitials(company.name)}
+              </span>
+            )}
+          </div>
 
-          {/* Team */}
-          {people.length > 0 && (
-            <section
-              className="hidden animate-fade-up w-full"
+          {company.description && (
+            <p
+              className="animate-fade-up mt-1 shrink-0 text-center text-sm text-neutral-500"
               style={stagger()}
             >
-              <h2 className="text-center text-xs font-semibold uppercase tracking-wide text-neutral-400">
-                Nuestro equipo
-              </h2>
-              <ul className="mt-3 flex flex-col items-center gap-2">
-                {people.map((person) => (
-                  <li key={person.slug}>
-                    <Link
-                      href={`/${company.slug}/${person.slug}`}
-                      className="text-sm text-neutral-600 underline underline-offset-2"
-                    >
-                      {person.firstName} {person.lastName}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
+              {company.description}
+            </p>
           )}
-        </div>
 
-        {/* Decorative accent shape bled off the bottom-left corner — same
-            shape/positioning as the person page's card, clipped by this
-            <main>'s own overflow-hidden + rounded corner. Purely
-            decorative here (no footer tagline text on this page). */}
-        <svg
-          className="pointer-events-none absolute -bottom-5 -left-7 h-20 w-27"
-          viewBox="0 150 320 240"
-          aria-hidden="true"
-        >
-          <path
-            d="M 0 165 L 285 375 L 45 375 C 20 375 0 355 0 330 Z"
-            fill={company.branding.primaryColor}
-          />
-          <path
-            d="M 110 225 L 305 375"
-            fill="none"
-            stroke={company.branding.primaryColor}
-            strokeWidth="12"
-            strokeLinecap="round"
-          />
-        </svg>
-      </main>
+          {/* Scrollable content: only this area scrolls if a company has enough
+              links/team members to overflow — the page itself never does. */}
+          <div className="mt-2 flex min-h-0 w-full flex-1 flex-col items-center gap-6 overflow-y-auto pb-2">
+            {/* Link-in-bio CTA buttons */}
+            {company.links && company.links.length > 0 && (
+              <div className="flex w-full flex-col gap-3">
+                {company.links.map((link) => (
+                  <CtaButton
+                    key={link.url}
+                    href={link.url}
+                    label={link.label}
+                    icon={link.icon}
+                    variant="row"
+                    className="animate-fade-up"
+                    style={stagger()}
+                    primaryColor={company.branding.primaryColor}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Location */}
+            {mapSrc && (
+              <section className="animate-fade-up w-full" style={stagger()}>
+                {company.address && (
+                  <p className="mt-2 text-center text-sm text-neutral-600">
+                    {company.address}
+                  </p>
+                )}
+                <iframe
+                  title={`Mapa de ${company.name}`}
+                  src={mapSrc}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="mt-3 h-46 w-full rounded-2xl border-0"
+                />
+                {company.googleMapsUrl && (
+                  <a
+                    href={company.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2 text-center text-sm text-neutral-700"
+                    style={{ borderColor: company.branding.primaryColor }}
+                  >
+                    <MapPinIcon className="h-4 w-4 shrink-0" />
+                    <span>Ver en Google Maps</span>
+                  </a>
+                )}
+              </section>
+            )}
+
+            {/* Team */}
+            {people.length > 0 && (
+              <section
+                className="hidden animate-fade-up w-full"
+                style={stagger()}
+              >
+                <h2 className="text-center text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                  Nuestro equipo
+                </h2>
+                <ul className="mt-3 flex flex-col items-center gap-2">
+                  {people.map((person) => (
+                    <li key={person.slug}>
+                      <Link
+                        href={`/${company.slug}/${person.slug}`}
+                        className="text-sm text-neutral-600 underline underline-offset-2"
+                      >
+                        {person.firstName} {person.lastName}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
+
+          {/* Decorative accent shape bled off the bottom-left corner — same
+              shape/positioning as the person page's card, clipped by this
+              <main>'s own overflow-hidden + rounded corner. Purely
+              decorative here (no footer tagline text on this page). */}
+          <svg
+            className="pointer-events-none absolute -bottom-5 -left-7 h-20 w-27"
+            viewBox="0 150 320 240"
+            aria-hidden="true"
+          >
+            <path
+              d="M 0 165 L 285 375 L 45 375 C 20 375 0 355 0 330 Z"
+              fill={company.branding.primaryColor}
+            />
+            <path
+              d="M 110 225 L 305 375"
+              fill="none"
+              stroke={company.branding.primaryColor}
+              strokeWidth="12"
+              strokeLinecap="round"
+            />
+          </svg>
+        </main>
+      </FlipCard>
     </div>
   );
 }
