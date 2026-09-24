@@ -89,6 +89,10 @@ coordinates out of `googleMapsUrl`'s `!3d{lat}!4d{lng}` segment when present
 address on hand yet — see RADA), falling back to a text query on `address`
 when there's no Maps URL. The address paragraph itself only renders when
 `company.address` is actually set — never fabricate one.
+The map `<iframe>` is flexible (`flex-1 min-h-24 max-h-64`), not a fixed
+height: it takes whatever space the card has left so small phones (e.g. iPhone
+8, 375×667) don't need to scroll; only very small screens (~320×568) fall back
+to the inner scroll region.
 
 `/c/{cardId}` is a route handler, not a page: it 302-redirects to
 `/{company}/{person}`, or to `/` if the card ID isn't found. A `TODO(phase 2)`

@@ -88,7 +88,7 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
         primaryColor={company.branding.primaryColor}
       >
         <main
-          className="relative flex h-full w-full flex-col items-center overflow-hidden rounded-4xl border-2 bg-white px-4 py-4 shadow-xl"
+          className="relative flex h-full w-full flex-col items-center overflow-hidden rounded-4xl border-2 bg-white px-4 pt-4 pb-12 shadow-xl"
           style={{ borderColor: company.branding.primaryColor }}
         >
           {/* Logo / avatar */}
@@ -124,7 +124,7 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
 
           {/* Scrollable content: only this area scrolls if a company has enough
               links/team members to overflow — the page itself never does. */}
-          <div className="mt-2 flex min-h-0 w-full flex-1 flex-col items-center gap-6 overflow-y-auto pb-2">
+          <div className="mt-2 flex min-h-0 w-full flex-1 flex-col items-center gap-2 overflow-y-auto pb-2">
             {/* Link-in-bio CTA buttons */}
             {company.links && company.links.length > 0 && (
               <div className="flex w-full flex-col gap-3">
@@ -145,9 +145,12 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
 
             {/* Location */}
             {mapSrc && (
-              <section className="animate-fade-up w-full" style={stagger()}>
+              <section
+                className="animate-fade-up flex min-h-0 w-full flex-1 flex-col"
+                style={stagger()}
+              >
                 {company.address && (
-                  <p className="mt-2 text-center text-sm text-neutral-600">
+                  <p className="mt-2 shrink-0 text-center text-sm text-neutral-600">
                     {company.address}
                   </p>
                 )}
@@ -156,14 +159,14 @@ export default async function CompanyPage({ params }: CompanyPageParams) {
                   src={mapSrc}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  className="mt-3 h-46 w-full rounded-2xl border-0"
+                  className="mt-3 min-h-24 max-h-64 w-full flex-1 rounded-2xl border-0"
                 />
                 {company.googleMapsUrl && (
                   <a
                     href={company.googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border px-4 py-2 text-center text-sm text-neutral-700"
+                    className="mt-3 flex w-full shrink-0 items-center justify-center gap-2 rounded-full border px-4 py-2 text-center text-sm text-neutral-700"
                     style={{ borderColor: company.branding.primaryColor }}
                   >
                     <MapPinIcon className="h-4 w-4 shrink-0" />
