@@ -22,9 +22,8 @@ const CTA_ICONS: Record<
  * Icon + label CTA used for link-in-bio style actions, in two looks:
  * - "solid" (default): bold brand-colored pill — the company page's own
  *   `links` list.
- * - "row": a neutral list row with a trailing chevron, for a contact-card
- *   style list (e.g. a person's page) where several brand-colored buttons
- *   stacked together would be too loud.
+ * - "row": a list row with a trailing chevron. Filled with `primaryColor`
+ *   (white icon/text) when given, neutral gray otherwise.
  * Both share this component so icon/label handling never drifts apart.
  */
 export function CtaButton({
@@ -52,17 +51,27 @@ export function CtaButton({
   };
 
   if (variant === "row") {
+    const branded = Boolean(primaryColor);
     return (
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={`flex w-full items-center gap-3 rounded-full border bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-800 transition-colors active:bg-neutral-200 ${primaryColor ? "" : "border-neutral-300"} ${className}`}
-        style={mergedStyle}
+        className={`flex w-full items-center gap-3 rounded-full border px-4 py-3 text-sm font-medium transition ${branded ? "text-white active:brightness-90" : "border-neutral-300 bg-neutral-100 text-neutral-800 active:bg-neutral-200"} ${className}`}
+        style={{
+          ...mergedStyle,
+          ...(primaryColor ? { backgroundColor: primaryColor } : {}),
+        }}
       >
-        {Icon && <Icon className="h-5 w-5 shrink-0 text-neutral-700" />}
+        {Icon && (
+          <Icon
+            className={`h-5 w-5 shrink-0 ${branded ? "" : "text-neutral-700"}`}
+          />
+        )}
         <span className="flex-1 text-left">{label}</span>
-        <ChevronRightIcon className="h-4 w-4 shrink-0 text-neutral-400" />
+        <ChevronRightIcon
+          className={`h-4 w-4 shrink-0 ${branded ? "opacity-80" : "text-neutral-400"}`}
+        />
       </a>
     );
   }

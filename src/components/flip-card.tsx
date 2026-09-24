@@ -51,14 +51,28 @@ export function FlipCard({
   const restingAngleRef = useRef(0);
   const gestureRef = useRef<Gesture | null>(null);
   const justDraggedRef = useRef(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const [flipped, setFlipped] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const inner = innerRef.current;
     return () => {
       if (inner) gsap.killTweensOf(inner);
+      clearTimeout(copyTimerRef.current);
     };
   }, []);
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      return;
+    }
+    setCopied(true);
+    clearTimeout(copyTimerRef.current);
+    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+  }
 
   function flipTo(target: number) {
     const inner = innerRef.current;
@@ -203,9 +217,14 @@ export function FlipCard({
               <p className="text-sm text-neutral-500">
                 Escaneá el código para abrirla
               </p>
-              <p className="text-xs break-all text-neutral-400">
-                {url.replace(/^https?:\/\//, "")}
-              </p>
+              <button
+                type="button"
+                onClick={copyLink}
+                aria-live="polite"
+                className="text-sm text-neutral-700 underline underline-offset-2"
+              >
+                {copied ? "¡Enlace copiado!" : "Copiar enlace"}
+              </button>
             </div>
 
             <button

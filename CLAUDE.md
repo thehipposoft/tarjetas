@@ -118,12 +118,12 @@ number (`person.social.whatsapp`), not the company's.
 
 `CtaButton` also takes an optional `primaryColor` prop, rendered as the
 button's border on both variants — pass `company.branding.primaryColor` at
-every call site so every CTA stays visually tied to the card's own border
-color. On the "row" variant this is the main visible effect (a colored
-outline around an otherwise neutral pill); on the "solid" variant the border
-matches the button's own brand-colored/gradient fill, so it reads as a subtle
-edge rather than a separate accent — omit the prop only for a context with no
-brand color to pass, which falls back to a neutral gray border.
+every call site so every CTA stays tied to the card's own color. On the
+"row" variant it also becomes the fill (`backgroundColor: primaryColor`, white
+icon/text/chevron — solid color only, no gradient); on the "solid" variant the
+border matches the brand-colored/gradient fill, so it reads as a subtle edge.
+Omit the prop only for a context with no brand color to pass: "row" then falls
+back to a neutral gray pill with a gray border.
 
 If a future task needs static Tailwind classes for brand colour (e.g. a
 "badge" component), ask which companies need it and consider generating
@@ -142,11 +142,8 @@ person page: the company logo bleeds off the top-left corner (positioned
 with a negative offset; the card's own `overflow-hidden` clips it into a
 corner "sticker" — no separate circular mask needed), the person's photo
 gets a `border-4` ring in `primaryColor`. Both pages render their
-CTAs/contact links as neutral list rows with a trailing chevron
-(`CtaButton`'s `variant="row"`, bordered in `primaryColor`) rather than bold
-solid buttons — even on the company page's own link list, several loud
-brand-colored buttons stacked together reads as too much once the row style
-existed for comparison. Two optional `Company` fields drive the person
+CTAs/contact links as pill rows with a trailing chevron
+(`CtaButton`'s `variant="row"`, filled with `primaryColor`, white text/icons). Two optional `Company` fields drive the person
 page's taglines, both `\n`-joined multi-line strings and both no-ops when
 unset: `tagline` (top-right, gray uppercase + a short accent-color
 underline) and `footerTagline` (bottom-right, same styling, sitting beside —
@@ -194,7 +191,7 @@ Both profile pages (`/{company}` and `/{company}/{person}`) are wrapped in
 swipe (touch or mouse drag) flips the card to a back face with a QR code of
 that page's own canonical URL (`absoluteUrl(...)`, generated server-side by
 `createQrSvg` in [src/lib/qr.ts](src/lib/qr.ts), shared with the `/qr` page)
-plus a "Volver" button. Notes for future changes:
+plus an underlined "Copiar enlace" button (copies the URL, briefly shows "¡Enlace copiado!") and a "Volver" button. Notes for future changes:
 - `FlipCard` owns the outer size (`max-w-107.5`, `max-h-184`, `h-full`); the
   page passes its `<main>` as `children` with `h-full w-full`, not the old
   sizing classes.
