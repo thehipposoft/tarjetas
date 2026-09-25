@@ -115,9 +115,11 @@ been requested.
 Link-in-bio style buttons (icon + label, brand-colored) go through the shared
 [`CtaButton`](src/components/cta-button.tsx) component — used for the company
 page's own `links` list, and reused on the person page for "Seguinos"/
-"Conocé {company}" so those stay in exact sync with the company's own
-`links` entries (same label, same url — looked up by `icon`, not
-re-typed). A person's WhatsApp button, though, always uses that person's own
+"Conocé {company}" so those stay in sync with the company's own `links`
+entries (same label, looked up by `icon`, not re-typed). "Seguinos" keeps the
+same url; "Conocé {company}" instead links internally to `/{company}` (the
+company's card, same tab — `CtaButton` opens hrefs starting with `/` in the
+same tab and everything else in a new one). A person's WhatsApp button, though, always uses that person's own
 number (`person.social.whatsapp`), not the company's.
 
 `CtaButton` also takes an optional `primaryColor` prop, rendered as the

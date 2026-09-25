@@ -45,6 +45,11 @@ export function CtaButton({
   primaryColor?: string;
 }) {
   const Icon = icon ? CTA_ICONS[icon] : null;
+  // Site-internal paths (e.g. "/rada") open in the same tab; everything else
+  // is an external destination.
+  const linkProps = href.startsWith("/")
+    ? {}
+    : { target: "_blank", rel: "noopener noreferrer" };
   const mergedStyle: CSSProperties = {
     ...style,
     ...(primaryColor ? { borderColor: primaryColor } : {}),
@@ -55,8 +60,7 @@ export function CtaButton({
     return (
       <a
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        {...linkProps}
         className={`flex w-full items-center gap-3 rounded-full border px-4 py-3 text-sm font-medium transition ${branded ? "text-white active:brightness-90" : "border-neutral-300 bg-neutral-100 text-neutral-800 active:bg-neutral-200"} ${className}`}
         style={{
           ...mergedStyle,
@@ -79,8 +83,7 @@ export function CtaButton({
   return (
     <a
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
+      {...linkProps}
       className={`flex w-full items-center justify-center gap-2 rounded-2xl border-2 px-5 py-4 text-center text-sm font-semibold text-white shadow-sm transition-transform active:scale-[0.98] ${primaryColor ? "" : "border-transparent"} ${className}`}
       style={mergedStyle}
     >

@@ -62,8 +62,9 @@ export default async function PersonPage({ params }: PersonPageParams) {
   const shareUrl = absoluteUrl(`/${company.slug}/${person.slug}`);
   const qrSvg = await createQrSvg(shareUrl);
   const displayCompanyName = company.name || company.slug;
-  // Reuse the company's own CTA links verbatim (label + url) so "Seguinos"
-  // and "Conocé {company}" always match the company page exactly.
+  // Reuse the company's own CTA links (label + url) so "Seguinos" matches the
+  // company page exactly. "Conocé {company}" keeps the company's label but
+  // points to the company's card (/{company}) instead of its external site.
   const instagramLink = company.links?.find((l) => l.icon === "instagram");
   const websiteLink = company.links?.find((l) => l.icon === "web");
 
@@ -198,7 +199,7 @@ export default async function PersonPage({ params }: PersonPageParams) {
               )}
               {websiteLink && (
                 <CtaButton
-                  href={websiteLink.url}
+                  href={`/${company.slug}`}
                   label={websiteLink.label}
                   icon="web"
                   variant="row"
