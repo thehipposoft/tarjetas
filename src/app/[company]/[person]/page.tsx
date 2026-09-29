@@ -6,6 +6,7 @@ import { brandBackground, logoBackgroundStyle } from "@/lib/branding";
 import { createQrSvg } from "@/lib/qr";
 import { absoluteUrl } from "@/lib/site";
 import { CtaButton } from "@/components/cta-button";
+import { AddContactButton } from "@/components/add-contact-button";
 import { FlipCard } from "@/components/flip-card";
 
 function getInitials(firstName: string, lastName: string) {
@@ -217,6 +218,11 @@ export default async function PersonPage({ params }: PersonPageParams) {
                   primaryColor={company.branding.primaryColor}
                 />
               )}
+              <AddContactButton
+                person={person}
+                company={company}
+                primaryColor={company.branding.primaryColor}
+              />
             </div>
           </div>
 

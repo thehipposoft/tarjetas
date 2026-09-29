@@ -219,6 +219,33 @@ plus an underlined "Copiar enlace" button (copies the URL, briefly shows "¡Enla
   domain unless `NEXT_PUBLIC_SITE_URL` is set.
 - There's no visible affordance for the swipe (no button on the front face).
 
+The person page (only — there's no company-level equivalent) has an
+"Agregar contacto" button ([src/components/add-contact-button.tsx](src/components/add-contact-button.tsx))
+that saves that person straight into the visitor's phone, last in the row
+list (below WhatsApp/Instagram/"Conocé {company}"). It's a client component
+since the save path depends on the *visitor's* browser at click time, not
+anything knowable at render:
+- A bare Android browser gets a direct `android.intent.action.INSERT`
+  intent (`intent:#Intent;action=...;type=vnd.android.cursor.dir/raw_contact;...;end`)
+  — skips any file prompt and inserts straight into Contacts.
+- Everything else (iOS Safari, desktop, and in-app browsers like
+  Instagram/WhatsApp that can't resolve `intent:` at all) falls back to
+  navigating to that person's vCard at
+  `/api/vcard/{company}/{person}` ([route.ts](src/app/api/vcard/[company]/[person]/route.ts),
+  built by [src/lib/contact.ts](src/lib/contact.ts)'s `vCardFor`). Served
+  `Content-Disposition: inline` (not `attachment`) so iOS Safari opens its
+  native "Add Contact" preview instead of just downloading a file. A real
+  `window.location.href` assignment, not `next/navigation`'s router — an API
+  route isn't a page, and the browser needs to actually process the
+  response's headers, not get a client-side route transition.
+- A person's phone number for both paths comes from `personPhone()`
+  (`person.phone`/`mobile` if set, else parsed from their `wa.me` WhatsApp
+  link) — people on this platform so far only ever have WhatsApp on file.
+- The button reuses the "row" pill's exact look via `CtaButton`'s now-exported
+  `rowButtonClasses`/`rowButtonStyle`/`RowButtonContent` helpers, so this
+  `<button onClick>` and `CtaButton`'s `<a href>` can never visually drift
+  apart.
+
 `Branding.logoBackground` (optional boolean, default `true`) controls whether
 the brand color/gradient renders behind the logo circle — see
 [src/lib/branding.ts](src/lib/branding.ts)'s `logoBackgroundStyle()`. Set it

@@ -19,6 +19,52 @@ const CTA_ICONS: Record<
 };
 
 /**
+ * The "row" pill look (filled with `primaryColor` + white text when given,
+ * neutral gray otherwise) is shared with non-link row actions — e.g.
+ * AddContactButton, which needs a `<button onClick>` instead of an `<a
+ * href>` — so the visual never drifts between the two.
+ */
+export function rowButtonClasses(branded: boolean, className = "") {
+  return `flex w-full items-center gap-3 rounded-full border px-4 py-3 text-sm font-medium transition ${branded ? "text-white active:brightness-90" : "border-neutral-300 bg-neutral-100 text-neutral-800 active:bg-neutral-200"} ${className}`;
+}
+
+export function rowButtonStyle(
+  primaryColor?: string,
+  style?: CSSProperties
+): CSSProperties {
+  return {
+    ...style,
+    ...(primaryColor
+      ? { borderColor: primaryColor, backgroundColor: primaryColor }
+      : {}),
+  };
+}
+
+export function RowButtonContent({
+  icon: Icon,
+  label,
+  branded,
+}: {
+  icon?: ComponentType<SVGProps<SVGSVGElement>> | null;
+  label: string;
+  branded: boolean;
+}) {
+  return (
+    <>
+      {Icon && (
+        <Icon
+          className={`h-5 w-5 shrink-0 ${branded ? "" : "text-neutral-700"}`}
+        />
+      )}
+      <span className="flex-1 text-left font-bold">{label}</span>
+      <ChevronRightIcon
+        className={`h-4 w-4 shrink-0 ${branded ? "opacity-80" : "text-neutral-400"}`}
+      />
+    </>
+  );
+}
+
+/**
  * Icon + label CTA used for link-in-bio style actions, in two looks:
  * - "solid" (default): bold brand-colored pill — the company page's own
  *   `links` list.
@@ -61,21 +107,10 @@ export function CtaButton({
       <a
         href={href}
         {...linkProps}
-        className={`flex w-full items-center gap-3 rounded-full border px-4 py-3 text-sm font-medium transition ${branded ? "text-white active:brightness-90" : "border-neutral-300 bg-neutral-100 text-neutral-800 active:bg-neutral-200"} ${className}`}
-        style={{
-          ...mergedStyle,
-          ...(primaryColor ? { backgroundColor: primaryColor } : {}),
-        }}
+        className={rowButtonClasses(branded, className)}
+        style={rowButtonStyle(primaryColor, style)}
       >
-        {Icon && (
-          <Icon
-            className={`h-5 w-5 shrink-0 ${branded ? "" : "text-neutral-700"}`}
-          />
-        )}
-        <span className="flex-1 text-left font-bold">{label}</span>
-        <ChevronRightIcon
-          className={`h-4 w-4 shrink-0 ${branded ? "opacity-80" : "text-neutral-400"}`}
-        />
+        <RowButtonContent icon={Icon} label={label} branded={branded} />
       </a>
     );
   }
