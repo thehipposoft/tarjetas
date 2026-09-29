@@ -72,7 +72,7 @@ export function CtaButton({
             className={`h-5 w-5 shrink-0 ${branded ? "" : "text-neutral-700"}`}
           />
         )}
-        <span className="flex-1 text-left">{label}</span>
+        <span className="flex-1 text-left font-bold">{label}</span>
         <ChevronRightIcon
           className={`h-4 w-4 shrink-0 ${branded ? "opacity-80" : "text-neutral-400"}`}
         />

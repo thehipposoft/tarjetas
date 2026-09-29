@@ -144,10 +144,17 @@ page intentionally does *not* get this treatment — it's meant to be
 printed/scanned, not browsed as a card.
 
 Both pages follow a business-card look (modeled on a reference design). The
-person page: the company logo bleeds off the top-left corner (positioned
-with a negative offset; the card's own `overflow-hidden` clips it into a
-corner "sticker" — no separate circular mask needed), the person's photo
-gets a `border-4` ring in `primaryColor`. Both pages render their
+person page: the company logo sits in the top-left corner (the card's own
+`overflow-hidden` + rounded corner clips it into a "sticker"), the person's
+photo gets a `border-4` ring in `primaryColor`. That corner logo also calls
+`logoBackgroundStyle(company.branding, ...)` (same helper the company page
+uses) so a logo file with transparent background and light/white artwork
+(Dycar's wordmark) gets a brand-colored backdrop and stays legible on the
+white card — RADA's own opaque badge asks for none (`logoBackground: false`)
+and renders edge-to-edge exactly as before. Only when there *is* a backdrop
+does the corner box get inner padding + rounded corners (`rounded-3xl p-3`);
+skip that for a no-backdrop logo like RADA's, which wants to bleed flush to
+the edge. Both pages render their
 CTAs/contact links as pill rows with a trailing chevron
 (`CtaButton`'s `variant="row"`, filled with `primaryColor`, white text/icons). Two optional `Company` fields drive the person
 page's taglines, both `\n`-joined multi-line strings and both no-ops when

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getCompany, getPerson } from "@/lib/data";
-import { brandBackground } from "@/lib/branding";
+import { brandBackground, logoBackgroundStyle } from "@/lib/branding";
 import { createQrSvg } from "@/lib/qr";
 import { absoluteUrl } from "@/lib/site";
 import { CtaButton } from "@/components/cta-button";
@@ -67,6 +67,7 @@ export default async function PersonPage({ params }: PersonPageParams) {
   // points to the company's card (/{company}) instead of its external site.
   const instagramLink = company.links?.find((l) => l.icon === "instagram");
   const websiteLink = company.links?.find((l) => l.icon === "web");
+  const logoBg = logoBackgroundStyle(company.branding, Boolean(company.logoUrl));
 
   return (
     <div className="flex h-dvh w-full items-center justify-center overflow-hidden bg-neutral-100 p-4">
@@ -82,16 +83,26 @@ export default async function PersonPage({ params }: PersonPageParams) {
         >
           {/* Company logo, bled off the top-left corner — the rounded card
               edge (overflow-hidden on this <main>) naturally clips it into a
-              corner "sticker", so no separate circular mask is needed here. */}
+              corner "sticker", so no separate circular mask is needed here.
+              Some logo files (e.g. Dycar's wordmark) have transparent
+              background and white text baked in, invisible on this white
+              card without a backdrop — logoBackgroundStyle paints one behind
+              the logo exactly when Branding.logoBackground calls for it
+              (RADA's own opaque badge needs none, so it stays untouched). */}
           {company.logoUrl && (
-            <div className="absolute top-1 left-1 h-24 w-24 shrink-0">
-              <Image
-                src={company.logoUrl}
-                alt={displayCompanyName}
-                fill
-                unoptimized
-                className="object-contain"
-              />
+            <div
+              className={`absolute top-1 left-1 flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden ${logoBg ? "rounded-full" : ""}`}
+              style={logoBg}
+            >
+              <div className="relative h-full w-full">
+                <Image
+                  src={company.logoUrl}
+                  alt={displayCompanyName}
+                  fill
+                  unoptimized
+                  className="object-contain"
+                />
+              </div>
             </div>
           )}
 
@@ -148,7 +159,7 @@ export default async function PersonPage({ params }: PersonPageParams) {
               {person.firstName} {person.lastName}
             </h1>
             {person.jobTitle && (
-              <p className="shrink-0 text-neutral-500">{person.jobTitle}</p>
+              <p className="shrink-0 text-neutral-600 font-bold">{person.jobTitle}</p>
             )}
 
             {/* Quick contact rows, list-style with a trailing chevron:
