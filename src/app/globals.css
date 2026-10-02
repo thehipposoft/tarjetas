@@ -19,6 +19,18 @@
   }
 }
 
+/* Fixed deep-navy & gold palette for standalone personal cards
+   (src/app/tomas-borigen) — not a site-wide theme. `onyx` is the card's dark
+   base color — originally a near-black, now a deep navy blue — kept under
+   this name since every `bg-onyx`/`border-onyx` usage means "the card's
+   base," not literally the mineral. */
+@theme {
+  --color-onyx: #0a1628;
+  --color-gold: #c9a45c;
+  --color-gold-light: #ecd497;
+  --color-gold-dark: #8a6a2f;
+}
+
 html,
 body {
   height: 100%;

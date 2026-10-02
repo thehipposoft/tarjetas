@@ -72,6 +72,7 @@ Types live in [src/types/card.ts](src/types/card.ts): `Company`, `Person`,
 | `/{company}` | Company profile / link-in-bio landing (e.g. `/rada`) — [src/app/[company]/page.tsx](src/app/[company]/page.tsx) |
 | `/{company}/{person}` | Individual digital profile (e.g. `/rada/tomas-borigen`) — [src/app/[company]/[person]/page.tsx](src/app/[company]/[person]/page.tsx) |
 | `/{company}/qr` | Standalone QR code for a company's landing page, for print (flyers/posters), not the NFC flow — [src/app/[company]/qr/page.tsx](src/app/[company]/qr/page.tsx) |
+| `/tomas-borigen` | Standalone *personal* card (black & gold, no company branding) — [src/app/tomas-borigen/page.tsx](src/app/tomas-borigen/page.tsx) |
 | `/c/{cardId}` | Physical card routing layer (NFC/QR target); resolves a card to its current profile so the chip never needs reprogramming — [src/app/c/[cardId]/route.ts](src/app/c/[cardId]/route.ts) |
 
 `/{company}/qr` generates its QR server-side with the `qrcode` package, pointed
@@ -218,6 +219,20 @@ plus an underlined "Copiar enlace" button (copies the URL, briefly shows "¡Enla
 - The QR encodes `SITE_URL`, so on localhost it points at the production
   domain unless `NEXT_PUBLIC_SITE_URL` is set.
 - There's no visible affordance for the swipe (no button on the front face).
+- `FlipCard` also takes an optional `back` prop (`ReactNode`) to replace the
+  default white/brand-color back face entirely — used by `/tomas-borigen`
+  (see **Personal cards** below), whose fixed navy/gold palette would clash
+  with the default back. This is a plain React node, not a render-prop
+  function: `FlipCard`'s callers are often Server Component pages, which
+  can't pass functions as props to a Client Component like `FlipCard`, only
+  serializable props and JSX/element trees. A custom `back` that needs the
+  flip/copy behavior gets it from two exported hooks instead of props:
+  `useFlipCard()` (returns `{ toggleFlip }`, via a context `FlipCard`
+  provides around its whole subtree) and `useCopyLink(url)` (returns
+  `{ copied, copyLink }`, the same state the default back face itself now
+  uses internally). Both are client-only, so a custom `back` needs its own
+  `"use client"` component — can't just be inline JSX in a Server Component
+  page (see `personal-card-back.tsx`).
 
 The person page (only — there's no company-level equivalent) has an
 "Agregar contacto" button ([src/components/add-contact-button.tsx](src/components/add-contact-button.tsx))
@@ -226,8 +241,18 @@ list (below WhatsApp/Instagram/"Conocé {company}"). It's a client component
 since the save path depends on the *visitor's* browser at click time, not
 anything knowable at render:
 - A bare Android browser gets a direct `android.intent.action.INSERT`
-  intent (`intent:#Intent;action=...;type=vnd.android.cursor.dir/raw_contact;...;end`)
-  — skips any file prompt and inserts straight into Contacts.
+  intent (`intent://contact#Intent;action=...;type=vnd.android.cursor.dir/contact;...;end`)
+  — skips any file prompt and opens Contacts' own "create contact" screen
+  pre-filled. Use `vnd.android.cursor.dir/contact` (`ContactsContract.Contacts`),
+  not `.../raw_contact` (`ContactsContract.RawContacts`, a lower-level
+  sync-adapter table with no ordinary app registered to handle
+  `ACTION_INSERT` on it) — that mistake looks identical to a working intent
+  in the code but silently does nothing on a real device, since an
+  unresolvable `intent://` with no `S.browser_fallback_url` just leaves
+  Chrome on the current page. The intent always sets
+  `S.browser_fallback_url` to this same person's vCard URL as a safety net,
+  so a device that still can't resolve it gets the vCard fallback instead
+  of nothing.
 - Everything else (iOS Safari, desktop, and in-app browsers like
   Instagram/WhatsApp that can't resolve `intent:` at all) falls back to
   navigating to that person's vCard at
@@ -254,6 +279,30 @@ to `false` when a company's logo file already has its own opaque background
 background and needs a backdrop for contrast (Dycar's wordmark PNG with white
 text). The flag never blanks the initials fallback when there's no
 `logoUrl` — that always needs its colored backdrop to stay legible.
+
+### Personal cards
+
+`/tomas-borigen` is a static route (it wins over `[company]`) for a card
+that deliberately shares no *visual* styling with the company/person cards
+(no `CtaButton`, no `Company.branding`), though it does reuse `FlipCard` for
+the swipe-to-QR gesture — via `FlipCard`'s `back` prop, with its own navy/gold
+back face in [personal-card-back.tsx](src/app/tomas-borigen/personal-card-back.tsx)
+(see **FlipCard**'s notes above for why that's a separate Client Component
+file rather than inline JSX in this Server Component page). Its data is a
+`PersonalCard` (with `PersonalLink`s: label + small caption) from
+`getPersonalCard()` in `data.ts`; its fixed palette is the `onyx`/`gold`/
+`gold-light`/`gold-dark` `@theme` tokens in `globals.css` — `onyx` means "the
+card's dark base," not literally the mineral: it's currently a deep navy blue
+(`#0a1628`, picked by sampling a reference screenshot), not black, and was a
+near-black (`#0b0b0c`) before that. Change its one hex value to re-theme the
+whole card; the warm/near-black tones hardcoded outside that token (the outer
+page backdrop's radial gradient, `viewport.themeColor`, and the link rows'
+hover fill) are separate raw hex values in `tomas-borigen/page.tsx` that need
+updating alongside it, since they're deliberately not full-opacity `onyx` and
+so aren't swapped automatically by changing the token. Background pattern (grain,
+diagonal satin bands, gold hairlines + corner brackets) is pure CSS/Tailwind,
+`pointer-events-none`. Keep the corner brackets small — on ~375×667 a larger
+bottom-left bracket runs into the last link row.
 
 ### Analytics
 

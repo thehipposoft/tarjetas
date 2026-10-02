@@ -1,4 +1,4 @@
-import type { Company, Person, Card } from "@/types/card";
+import type { Company, Person, Card, PersonalCard } from "@/types/card";
 
 /**
  * Phase 1 (MVP): hardcoded data.
@@ -131,6 +131,52 @@ const cards: Card[] = [
     createdAt: "2026-09-01",
   },
 ];
+
+const personalCards: PersonalCard[] = [
+  {
+    slug: "tomas-borigen",
+    firstName: "Tomás",
+    lastName: "Borigen",
+    jobTitle: "",
+    photoUrl: "/individual/tomas-borigen-no-bg.png",
+    links: [
+      {
+        label: "WhatsApp",
+        caption: "Escribime directo",
+        url: "https://wa.me/5493874730332",
+        icon: "whatsapp",
+      },
+      {
+        label: "Dycar Forthing",
+        caption: "Instagram",
+        url: "https://www.instagram.com/forthingdycar/",
+        icon: "instagram",
+      },
+      {
+        label: "Dycar Trucks",
+        caption: "Propuesta",
+        url: "https://docs.google.com/forms/d/e/1FAIpQLSfdkNhDXsfWIeplhpU_QvMR5a8nckfHwd0mdNXlmNvESj9FdQ/viewform",
+        icon: "form",
+      },
+      {
+        label: "Dycar Trucks",
+        caption: "Instagram",
+        url: "https://www.instagram.com/dycartrucks/",
+        icon: "instagram",
+      },
+      {
+        label: "DYCAR Chevrolet",
+        caption: "Instagram",
+        url: "https://www.instagram.com/chevroletdycar/?hl=en",
+        icon: "instagram",
+      },
+    ],
+  },
+];
+
+export function getPersonalCard(slug: string): PersonalCard | undefined {
+  return personalCards.find((p) => p.slug === slug);
+}
 
 export function getAllCompanies(): Company[] {
   return companies;

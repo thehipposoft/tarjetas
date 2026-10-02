@@ -35,6 +35,7 @@ export function AddContactButton({
     const isInAppBrowser = /Instagram|FBAN|FBAV|WhatsApp|LinkedInApp/i.test(
       ua
     );
+    const vcardPath = `/api/vcard/${company.slug}/${person.slug}`;
 
     if (isAndroid && !isInAppBrowser) {
       const e = encodeURIComponent;
@@ -46,8 +47,15 @@ export function AddContactButton({
         person.email && `S.email=${e(person.email)}`,
         `S.company=${e(org)}`,
         person.jobTitle && `S.job_title=${e(person.jobTitle)}`,
+        // If no app can resolve the intent (or the device blocks it),
+        // Chrome falls back to this URL instead of silently doing nothing.
+        `S.browser_fallback_url=${e(window.location.origin + vcardPath)}`,
       ].filter((part): part is string => Boolean(part));
-      window.location.href = `intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/raw_contact;${fields.join(";")};end`;
+      // `vnd.android.cursor.dir/contact` (ContactsContract.Contacts, the
+      // "create a new contact" UI) — not `.../raw_contact`, which is a
+      // lower-level sync-adapter table that no ordinary app registers to
+      // handle, so that variant silently resolves to nothing at all.
+      window.location.href = `intent://contact#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/contact;${fields.join(";")};end`;
       return;
     }
 
@@ -56,7 +64,7 @@ export function AddContactButton({
     // an API route isn't a page, so this isn't the router-vs-<a> case that
     // rule guards against.
     // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-    window.location.href = `/api/vcard/${company.slug}/${person.slug}`;
+    window.location.href = vcardPath;
   }
 
   return (

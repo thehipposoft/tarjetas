@@ -82,3 +82,22 @@ export interface Card {
   deactivatedAt?: string;
   replacementCardId?: string;
 }
+
+/** A link on a standalone personal card, with an optional small caption under its label (e.g. "Instagram"). */
+export interface PersonalLink extends CtaLink {
+  caption?: string;
+}
+
+/**
+ * A standalone, personal card — not tied to any company's branding or
+ * profile (see /tomas-borigen). Has its own fixed look instead of
+ * Company.branding.
+ */
+export interface PersonalCard {
+  slug: string;
+  firstName: string;
+  lastName: string;
+  jobTitle?: string;
+  photoUrl?: string;
+  links: PersonalLink[];
+}
