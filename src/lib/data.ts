@@ -153,10 +153,10 @@ const personalCards: PersonalCard[] = [
         icon: "instagram",
       },
       {
-        label: "Dycar Trucks",
-        caption: "Propuesta",
-        url: "https://docs.google.com/forms/d/e/1FAIpQLSfdkNhDXsfWIeplhpU_QvMR5a8nckfHwd0mdNXlmNvESj9FdQ/viewform",
-        icon: "form",
+        label: "Grupo Borigen Betzel",
+        caption: "Presentación",
+        url: "https://wp.thehipposoft.com/wp-content/uploads/2026/10/Grupo-Borigen-Betzel.pdf",
+        icon: "web",
       },
       {
         label: "Dycar Trucks",
@@ -165,7 +165,7 @@ const personalCards: PersonalCard[] = [
         icon: "instagram",
       },
       {
-        label: "DYCAR Chevrolet",
+        label: "Dycar Chevrolet",
         caption: "Instagram",
         url: "https://www.instagram.com/chevroletdycar/?hl=en",
         icon: "instagram",

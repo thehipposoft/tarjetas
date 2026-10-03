@@ -141,7 +141,7 @@ export default async function TomasBorigenPage() {
           </div>
 
           <div className="relative flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-4 overflow-y-auto px-8 py-8">
-            <div className="animate-fade-up shrink-0 rounded-full bg-linear-to-br from-gold-light via-gold-dark to-gold p-0.75 shadow-[0_0_40px_-8px_rgba(201,164,92,0.45)]">
+            <div className="animate-fade-up shrink-0 rounded-full bg-linear-to-br from-gold-light via-gold-dark to-gold p-0.75">
               <div className="rounded-full bg-onyx p-1">
                 <div className="relative h-32 w-32 overflow-hidden rounded-full">
                   {card.photoUrl ? (

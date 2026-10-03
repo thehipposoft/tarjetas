@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getCompany, getPerson } from "@/lib/data";
 import { brandBackground, logoBackgroundStyle } from "@/lib/branding";
 import { createQrSvg } from "@/lib/qr";
@@ -55,6 +55,14 @@ export async function generateMetadata({
 
 export default async function PersonPage({ params }: PersonPageParams) {
   const { company: companySlug, person: personSlug } = await params;
+
+  // TODO(temporary): Tomás's RADA profile currently redirects to his
+  // standalone personal card instead of rendering here — requested as a
+  // stopgap, to be revisited/removed later.
+  if (companySlug === "rada" && personSlug === "tomas-borigen") {
+    redirect("/tomas-borigen");
+  }
+
   const company = getCompany(companySlug);
   const person = getPerson(companySlug, personSlug);
   if (!company || !person) notFound();
