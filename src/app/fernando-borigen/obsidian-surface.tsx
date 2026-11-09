@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  createContext,
-  useContext,
   useEffect,
   useRef,
   useState,
@@ -26,7 +24,8 @@ import styles from "./obsidian.module.css";
  * Values are written straight to `style` inside a requestAnimationFrame loop
  * (eased towards the latest sensor target, stopping once settled), so sensor
  * events never cause a React render. Nothing about the sensor is stored or
- * sent anywhere. With prefers-reduced-motion, without a sensor, or if
+ * sent anywhere. On iOS the sensor unlocks on the visitor's first tap (see
+ * below). With prefers-reduced-motion, without a sensor, or if
  * permission is refused, the CSS defaults give the static lighting design.
  */
 
@@ -63,11 +62,6 @@ function subscribeToMotionPreference(onChange: () => void) {
   query.addEventListener("change", onChange);
   return () => query.removeEventListener("change", onChange);
 }
-
-const LightingContext = createContext<{
-  showToggle: boolean;
-  enable: () => void;
-} | null>(null);
 
 export function LightingRoot({ children }: { children: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -199,53 +193,29 @@ export function LightingRoot({ children }: { children: ReactNode }) {
     };
   }, [permission]);
 
-  async function enable() {
-    try {
-      const result = await orientationCtor()?.requestPermission?.();
-      setPermission(result === "granted" ? "granted" : "denied");
-    } catch {
-      setPermission("denied");
-    }
-  }
+  // iOS only allows the sensor-permission prompt inside a user gesture, so
+  // there is no button: the first tap anywhere on the page asks (the
+  // request must start synchronously inside that touch handler). Other
+  // platforms never get here — their sensor works without asking.
+  useEffect(() => {
+    if (!canAskPermission || permission !== "idle") return;
+    const onFirstTouch = () => {
+      const request = orientationCtor()?.requestPermission?.();
+      if (!request) return;
+      request
+        .then((result) =>
+          setPermission(result === "granted" ? "granted" : "denied")
+        )
+        .catch(() => setPermission("denied"));
+    };
+    window.addEventListener("touchend", onFirstTouch, { once: true });
+    return () => window.removeEventListener("touchend", onFirstTouch);
+  }, [canAskPermission, permission]);
 
   return (
-    <LightingContext.Provider
-      value={{ showToggle: canAskPermission && permission === "idle", enable }}
-    >
-      <div ref={rootRef} className={styles.lightRoot}>
-        {children}
-      </div>
-    </LightingContext.Provider>
-  );
-}
-
-/** Discreet "enable dynamic lighting" control — iOS only, never automatic. */
-export function LightToggle() {
-  const ctx = useContext(LightingContext);
-  if (!ctx?.showToggle) return null;
-
-  return (
-    <button
-      type="button"
-      onClick={ctx.enable}
-      className={`${styles.cornerButton} ${styles.cornerRight}`}
-      aria-label="Activar iluminación dinámica"
-      title="Activar iluminación dinámica"
-    >
-      <span className={styles.cornerRing}>
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1" />
-        </svg>
-      </span>
-    </button>
+    <div ref={rootRef} className={styles.lightRoot}>
+      {children}
+    </div>
   );
 }
 

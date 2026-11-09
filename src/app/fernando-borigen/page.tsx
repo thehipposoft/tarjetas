@@ -7,7 +7,6 @@ import { fullName, profileConfig } from "./profile-config";
 import { buildVCard } from "./vcard-text";
 import {
   FlipToQrButton,
-  LightToggle,
   LightingRoot,
   ObsidianFace,
 } from "./obsidian-surface";
@@ -88,7 +87,6 @@ export default async function FernandoBorigenPage() {
         >
           <ObsidianFace>
             <FlipToQrButton />
-            <LightToggle />
             <main className={styles.content} lang="es">
               <IdentitySection config={profileConfig} />
               <ContactActions config={profileConfig} />
