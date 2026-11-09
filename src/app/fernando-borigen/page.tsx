@@ -1,7 +1,17 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond } from "next/font/google";
+import { FlipCard } from "@/components/flip-card";
+import { createQrSvg } from "@/lib/qr";
+import { absoluteUrl } from "@/lib/site";
 import { fullName, profileConfig } from "./profile-config";
-import { ObsidianSurface } from "./obsidian-surface";
+import { buildVCard } from "./vcard-text";
+import {
+  FlipToQrButton,
+  LightToggle,
+  LightingRoot,
+  ObsidianFace,
+} from "./obsidian-surface";
+import { CardBack } from "./card-back";
 import { IdentitySection } from "./identity-section";
 import { ContactActions } from "./contact-actions";
 import { BusinessLinks } from "./business-links";
@@ -12,8 +22,9 @@ import styles from "./obsidian.module.css";
  * Standalone executive card for Fernando Borigen — "Obsidian": near-black
  * graphite bands, sparing red accents, tilt-driven lighting
  * (./obsidian-surface.tsx). Self-contained like /tomas-borigen: its own
- * palette (./obsidian.module.css) and content (./profile-config.ts), no
- * Company/Person data or shared card components.
+ * palette (./obsidian.module.css) and content (./profile-config.ts). Like the
+ * other cards it flips (swipe, or the QR corner button) via FlipCard; its
+ * back face (./card-back.tsx) shows a QR that encodes the contact itself.
  */
 
 const serif = Cormorant_Garamond({
@@ -53,17 +64,40 @@ export const metadata: Metadata = {
   },
 };
 
-export default function FernandoBorigenPage() {
+export default async function FernandoBorigenPage() {
+  const contactQrSvg = await createQrSvg(
+    buildVCard(profileConfig, { compact: true })
+  );
+
   return (
     <div className={`${styles.page} ${serif.variable}`}>
-      <ObsidianSurface>
-        <main className={styles.content} lang="es">
-          <IdentitySection config={profileConfig} />
-          <ContactActions config={profileConfig} />
-          <BusinessLinks websites={profileConfig.websites} />
-          <CardFooter since={profileConfig.since} />
-        </main>
-      </ObsidianSurface>
+      <LightingRoot>
+        <FlipCard
+          qrSvg={contactQrSvg}
+          url={absoluteUrl(PATH)}
+          title={fullName}
+          primaryColor="#c62828"
+          sizeClassName="max-h-235 max-w-110"
+          back={
+            <CardBack
+              fullName={fullName}
+              organization={profileConfig.organization}
+              qrSvg={contactQrSvg}
+            />
+          }
+        >
+          <ObsidianFace>
+            <FlipToQrButton />
+            <LightToggle />
+            <main className={styles.content} lang="es">
+              <IdentitySection config={profileConfig} />
+              <ContactActions config={profileConfig} />
+              <BusinessLinks websites={profileConfig.websites} />
+              <CardFooter since={profileConfig.since} />
+            </main>
+          </ObsidianFace>
+        </FlipCard>
+      </LightingRoot>
     </div>
   );
 }

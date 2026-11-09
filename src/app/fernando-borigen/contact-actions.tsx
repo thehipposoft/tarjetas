@@ -25,23 +25,6 @@ function MailIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function BookmarkIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      {...props}
-    >
-      <path d="M7 3.5h10a1 1 0 0 1 1 1v16l-6-4.2-6 4.2v-16a1 1 0 0 1 1-1Z" />
-    </svg>
-  );
-}
-
 interface Action {
   label: string;
   href?: string;
@@ -58,11 +41,6 @@ export function ContactActions({ config }: { config: ProfileConfig }) {
       icon: WhatsAppIcon,
     },
     { label: "Email", href: emailHref(config), icon: MailIcon },
-    {
-      label: "Guardar contacto",
-      href: `/${config.slug}/vcard`,
-      icon: BookmarkIcon,
-    },
   ];
 
   return (

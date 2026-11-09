@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { ChevronRightIcon } from "@/components/icons";
 import type { BusinessWebsite } from "./profile-config";
 import styles from "./obsidian.module.css";
@@ -16,7 +17,16 @@ export function BusinessLinks({ websites }: { websites: BusinessWebsite[] }) {
             <span className={styles.mark} aria-hidden="true">
               {site.logo ? (
                 // eslint-disable-next-line @next/next/no-img-element -- small static SVG, no optimisation needed
-                <img src={site.logo} alt="" className={styles.markLogo} />
+                <img
+                  src={site.logo}
+                  alt=""
+                  className={styles.markLogo}
+                  style={
+                    site.logoHeight
+                      ? ({ "--logo-h": `${site.logoHeight}px` } as CSSProperties)
+                      : undefined
+                  }
+                />
               ) : (
                 site.mark.map((line) => <span key={line}>{line}</span>)
               )}

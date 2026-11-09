@@ -14,6 +14,8 @@ export interface BusinessWebsite {
    * `mark` as a plain text treatment rather than an improvised logo.
    */
   logo?: string;
+  /** Max rendered height of `logo` in px (default 34) — evens out marks of different proportions. */
+  logoHeight?: number;
   /** Text shown in the logo slot when there's no `logo`; one entry per line. */
   mark: string[];
 }
@@ -40,23 +42,29 @@ export const profileConfig: ProfileConfig = {
   position: "Director",
   organization: "Grupo Borigen Betzel",
   since: "1990",
-  phone: "",
-  email: "",
-  whatsapp: "",
+  phone: "+54 9 3876 84-3735",
+  email: "fernando.borigen@eurodycar.com.ar",
+  whatsapp: "5493876843735",
   websites: [
     {
       name: "Chevrolet Dycar",
       url: "https://www.chevroletdycar.com.ar/",
+      logo: "/logos/fernando-borigen/chevrolet-dycar.png",
+      logoHeight: 26,
       mark: ["Chevrolet"],
     },
     {
       name: "Eurodycar",
       url: "https://eurodycar.com.ar/",
+      logo: "/logos/fernando-borigen/eurodycar.png",
+      logoHeight: 38,
       mark: ["Peugeot", "Citroën"],
     },
     {
       name: "Grupo Borigen Betzel",
       url: "https://www.borigenbetzel.com.ar/",
+      logo: "/logos/fernando-borigen/borigen-betzel.png",
+      logoHeight: 21,
       mark: ["Grupo"],
     },
   ],

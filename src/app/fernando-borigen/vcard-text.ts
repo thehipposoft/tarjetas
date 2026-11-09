@@ -9,8 +9,11 @@ function escapeValue(value: string): string {
     .replace(/\n/g, "\\n");
 }
 
-/** vCard 3.0 for the "Guardar contacto" action. Empty contact fields are omitted. */
-export function buildVCard(config: ProfileConfig): string {
+/** vCard 3.0 for "Guardar contacto" and the back-face QR. Empty contact fields are omitted. */
+export function buildVCard(
+  config: ProfileConfig,
+  { compact = false }: { compact?: boolean } = {}
+): string {
   const whatsappDigits = config.whatsapp.replace(/\D/g, "");
   const phone = config.phone || (whatsappDigits ? `+${whatsappDigits}` : "");
 
@@ -24,7 +27,11 @@ export function buildVCard(config: ProfileConfig): string {
     phone && `TEL;TYPE=CELL:${escapeValue(phone)}`,
     config.email && `EMAIL;TYPE=WORK:${escapeValue(config.email)}`,
     `URL:${absoluteUrl(`/${config.slug}`)}`,
-    ...config.websites.map((site) => `URL;TYPE=WORK:${site.url}`),
+    // Compact (for the QR code): skip the group's sites to keep the code
+    // sparse and quick to scan; the downloadable .vcf keeps them.
+    ...(compact
+      ? []
+      : config.websites.map((site) => `URL;TYPE=WORK:${site.url}`)),
     "END:VCARD",
   ].filter((line): line is string => Boolean(line));
 

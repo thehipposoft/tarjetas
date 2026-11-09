@@ -79,6 +79,7 @@ export function FlipCard({
   title,
   primaryColor,
   back,
+  sizeClassName = "max-h-184 max-w-107.5",
 }: {
   children: ReactNode;
   qrSvg: string;
@@ -97,6 +98,8 @@ export function FlipCard({
    * drifts between the two.
    */
   back?: ReactNode;
+  /** Max-size utilities for the card (default `max-h-184 max-w-107.5`); pass full literal class names so Tailwind picks them up. */
+  sizeClassName?: string;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -214,7 +217,7 @@ export function FlipCard({
     <FlipCardContext.Provider value={{ toggleFlip }}>
       <div
         ref={rootRef}
-        className="perspective-distant relative mx-auto h-full max-h-184 w-full max-w-107.5 touch-pan-y **:touch-pan-y"
+        className={`perspective-distant relative mx-auto h-full w-full touch-pan-y **:touch-pan-y ${sizeClassName}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={(e) => endGesture(e, false)}

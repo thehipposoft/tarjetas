@@ -1,16 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import type { ReactNode } from "react";
+import { useFlipCard } from "@/components/flip-card";
 import styles from "./obsidian.module.css";
 
 /**
- * The card's outer surface plus its "premium dynamic lighting".
+ * "Premium dynamic lighting" for the Obsidian card.
  *
- * Phone tilt (DeviceOrientationEvent) — or the mouse on desktop — moves a
- * soft reflection across the graphite bands, the glass contact buttons and
- * the metallic edges of the business rows. All of that is plain CSS reading
- * five custom properties on this element:
+ * `LightingRoot` wraps BOTH faces of the flip card, so the front and the QR
+ * back share one light. Phone tilt (DeviceOrientationEvent) — or the mouse
+ * on desktop — writes five custom properties on it, inherited by both faces:
  *
  *   --light-x / --light-y   reflection centre, in %
  *   --light-intensity       0.6 at rest → 1 at full tilt
@@ -24,6 +31,7 @@ import styles from "./obsidian.module.css";
  */
 
 type PermissionResult = "granted" | "denied";
+type PermissionState = "idle" | "granted" | "denied";
 type OrientationEventWithPermission = typeof DeviceOrientationEvent & {
   requestPermission?: () => Promise<PermissionResult>;
 };
@@ -56,20 +64,23 @@ function subscribeToMotionPreference(onChange: () => void) {
   return () => query.removeEventListener("change", onChange);
 }
 
-export function ObsidianSurface({ children }: { children: ReactNode }) {
-  const surfaceRef = useRef<HTMLDivElement>(null);
+const LightingContext = createContext<{
+  showToggle: boolean;
+  enable: () => void;
+} | null>(null);
+
+export function LightingRoot({ children }: { children: ReactNode }) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const canAskPermission = useSyncExternalStore(
     subscribeToMotionPreference,
     sensorNeedsPermission,
     () => false
   );
-  const [permission, setPermission] = useState<
-    "idle" | "granted" | "denied"
-  >("idle");
+  const [permission, setPermission] = useState<PermissionState>("idle");
 
   useEffect(() => {
-    const surface = surfaceRef.current;
-    if (!surface) return;
+    const root = rootRef.current;
+    if (!root) return;
 
     const reducedMotion = window.matchMedia(REDUCED_MOTION);
     const finePointer = window.matchMedia(FINE_POINTER);
@@ -82,7 +93,7 @@ export function ObsidianSurface({ children }: { children: ReactNode }) {
     const write = () => {
       const { x, y } = current;
       const tilt = Math.min(1, Math.hypot(x, y) / Math.SQRT2);
-      const s = surface.style;
+      const s = root.style;
       s.setProperty("--light-x", `${(50 + x * 34).toFixed(2)}%`);
       s.setProperty("--light-y", `${(28 + y * 26).toFixed(2)}%`);
       s.setProperty(
@@ -156,7 +167,7 @@ export function ObsidianSurface({ children }: { children: ReactNode }) {
         "--lx",
         "--ly",
       ]) {
-        surface.style.removeProperty(prop);
+        root.style.removeProperty(prop);
       }
     };
 
@@ -188,7 +199,7 @@ export function ObsidianSurface({ children }: { children: ReactNode }) {
     };
   }, [permission]);
 
-  async function enableLighting() {
+  async function enable() {
     try {
       const result = await orientationCtor()?.requestPermission?.();
       setPermission(result === "granted" ? "granted" : "denied");
@@ -198,38 +209,87 @@ export function ObsidianSurface({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div ref={surfaceRef} className={styles.card}>
+    <LightingContext.Provider
+      value={{ showToggle: canAskPermission && permission === "idle", enable }}
+    >
+      <div ref={rootRef} className={styles.lightRoot}>
+        {children}
+      </div>
+    </LightingContext.Provider>
+  );
+}
+
+/** Discreet "enable dynamic lighting" control — iOS only, never automatic. */
+export function LightToggle() {
+  const ctx = useContext(LightingContext);
+  if (!ctx?.showToggle) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={ctx.enable}
+      className={`${styles.cornerButton} ${styles.cornerRight}`}
+      aria-label="Activar iluminación dinámica"
+      title="Activar iluminación dinámica"
+    >
+      <span className={styles.cornerRing}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1" />
+        </svg>
+      </span>
+    </button>
+  );
+}
+
+/** Small QR icon that flips the card — swiping sideways does the same. */
+export function FlipToQrButton() {
+  const { toggleFlip } = useFlipCard();
+  return (
+    <button
+      type="button"
+      onClick={toggleFlip}
+      className={`${styles.cornerButton} ${styles.cornerLeft}`}
+      aria-label="Mostrar código QR del contacto"
+      title="Código QR"
+    >
+      <span className={styles.cornerRing}>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="4" y="4" width="6" height="6" rx="1" />
+          <rect x="14" y="4" width="6" height="6" rx="1" />
+          <rect x="4" y="14" width="6" height="6" rx="1" />
+          <path d="M14 14h2v2h-2zM18 18h2v2h-2zM18 14h2M14 18v2" />
+        </svg>
+      </span>
+    </button>
+  );
+}
+
+/** One face of the card: graphite bands, moving light and red accents. */
+export function ObsidianFace({ children }: { children: ReactNode }) {
+  return (
+    <div className={styles.card}>
       <div className={styles.bands} aria-hidden="true" />
       <div className={styles.light} aria-hidden="true" />
       <span className={`${styles.accent} ${styles.accentTop}`} aria-hidden="true" />
       <span className={`${styles.accent} ${styles.accentTopFaint}`} aria-hidden="true" />
       <span className={`${styles.accent} ${styles.accentBottom}`} aria-hidden="true" />
       <span className={`${styles.accent} ${styles.accentBottomFaint}`} aria-hidden="true" />
-
-      {canAskPermission && permission === "idle" && (
-        <button
-          type="button"
-          onClick={enableLighting}
-          className={styles.lightToggle}
-          aria-label="Activar iluminación dinámica"
-          title="Activar iluminación dinámica"
-        >
-          <span className={styles.lightToggleRing}>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1" />
-            </svg>
-          </span>
-        </button>
-      )}
-
       {children}
     </div>
   );
